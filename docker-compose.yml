@@ -1,0 +1,18 @@
+services:
+  db:
+    # Deliberately its own container on its own port, not pets-appts' 5432 --
+    # this library's test suite drops and recreates its database on every run,
+    # and it must never be pointed at an application's data by accident.
+    container_name: appts-core-db
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 20

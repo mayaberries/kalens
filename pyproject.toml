@@ -1,0 +1,49 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "appts-core"
+version = "0.1.0"
+description = "The scheduling engine extracted verbatim from pets-appts: appointments, clinic availability, and public booking."
+readme = "README.md"
+requires-python = ">=3.13"
+license = { text = "MIT" }
+authors = [{ name = "Maya Morales", email = "maymorales@proton.me" }]
+
+# Pinned to match pets-appts/backend/requirements.txt exactly. Installing this
+# library must never move a host application's own versions -- an extracted
+# component that silently upgrades FastAPI underneath its host is not a
+# drop-in replacement for the code it replaced.
+dependencies = [
+    "fastapi==0.141.1",
+    "pydantic==2.13.4",
+    "databases==0.9.0",
+    "limits==5.8.0",
+    "alembic==1.19.1",
+    "SQLAlchemy==2.0.52",
+    "email-validator==2.3.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest==9.1.1",
+    "pytest-asyncio==1.4.0",
+    "httpx==0.28.1",
+    "asgi-lifespan==2.1.0",
+    "asyncpg==0.31.0",
+    "psycopg2-binary==2.9.12",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/appts_core"]
+
+# The migration scripts are data files, not importable modules, but Alembic
+# resolves them by filesystem path off the installed package -- so they have
+# to ship inside the wheel.
+[tool.hatch.build.targets.wheel.force-include]
+"src/appts_core/migrations" = "appts_core/migrations"
+
+[tool.pytest.ini_options]
+asyncio_mode = "strict"
+testpaths = ["tests"]
