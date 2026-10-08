@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "appts-core"
+name = "kalens"
 version = "0.1.0"
 description = "The scheduling engine extracted verbatim from pets-appts: appointments, clinic availability, and public booking."
 readme = "README.md"

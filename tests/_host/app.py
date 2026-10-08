@@ -80,6 +80,6 @@ def build_app(database_url: str, settings: Settings | None = None) -> tuple[Fast
         yield
         await database.disconnect()
 
-    app = FastAPI(title="appts-core reference host", lifespan=lifespan)
+    app = FastAPI(title="kalens reference host", lifespan=lifespan)
     app.include_router(api, prefix="/api")
     return app, appts

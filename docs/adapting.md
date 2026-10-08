@@ -1,4 +1,4 @@
-# Adapting appts-core to your domain
+# Adapting kalens to your domain
 
 The extraction was verbatim. Nothing was generalised on the way out, so the
 code still reads like a veterinary clinic: the appointment's subject column is
@@ -240,6 +240,6 @@ Ranked by how much it unblocks, not by effort:
    nothing today depends on it, and the most interesting because it's the
    feature everyone assumes already exists.
 
-Items 1 and 2 are the ones that make "appts-core" an honest name. Until then
-it is pets-appts' scheduler with the imports moved — which is exactly what it
+Items 1 and 2 are the ones that make this a general scheduling engine. Until
+then it is pets-appts' scheduler with the imports moved — which is exactly what it
 was asked to be, and worth being clear-eyed about.

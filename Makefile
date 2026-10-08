@@ -3,7 +3,7 @@ PY   := $(VENV)/bin/python
 PIP  := $(VENV)/bin/pip
 
 # The test suite drops and recreates APPTS_CORE_TEST_DB on every run, so this
-# points at appts-core's own container (port 5433), never pets-appts' 5432.
+# points at kalens' own container (port 5433), never pets-appts' 5432.
 export APPTS_CORE_DATABASE_URL ?= postgresql://postgres:postgres@localhost:5433/postgres
 
 .PHONY: help venv install db-up db-down db-logs test verify compare-schema compare-openapi lint clean
@@ -21,7 +21,7 @@ install: venv ## install the package and its test extras, editable
 db-up: ## start postgres (port 5433) and wait for it
 	docker compose up -d db
 	@until docker compose exec -T db pg_isready -U postgres >/dev/null 2>&1; do sleep 1; done
-	@echo "appts-core-db ready on 5433"
+	@echo "kalens-db ready on 5433"
 
 db-down: ## stop postgres and drop its volume
 	docker compose down -v

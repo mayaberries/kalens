@@ -1,7 +1,7 @@
 """
 Prove the library's migration produces the same schema pets-appts does.
 
-Builds two throwaway databases side by side on the appts-core Postgres:
+Builds two throwaway databases side by side on the kalens Postgres:
 
     reference  <- pets-appts' own alembic chain, `upgrade head`
     library    <- the host-prerequisite DDL, then appts_core's chain

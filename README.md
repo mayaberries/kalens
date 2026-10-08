@@ -1,4 +1,4 @@
-# appts-core
+# kalens
 
 The scheduling engine from [`pets-appts`](../pets-appts), extracted verbatim so
 more than one application can run it instead of forking it.
@@ -19,8 +19,11 @@ pet, a patient, a garment) — stays with the host and arrives through
 ## Install
 
 ```bash
-pip install "appts-core @ git+ssh://git@github.com/mayaberries/appts-core.git@v0.1.0"
+pip install "kalens @ git+ssh://git@github.com/mayaberries/kalens.git@v0.1.0"
 ```
+
+`kalens` is the project codename and the distribution name; the import name
+is still `appts_core`, as are the Alembic section and its version table.
 
 ## Wire it up
 
