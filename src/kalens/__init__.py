@@ -1,5 +1,5 @@
 """
-appts_core -- the scheduling engine extracted from pets-appts.
+kalens -- the scheduling engine extracted from pets-appts.
 
 Appointments, weekly availability, and the public booking widget surface,
 lifted out verbatim so more than one application can run the same engine
@@ -10,7 +10,7 @@ subject of a booking stay with the host and arrive through
 
 USAGE
 
-    from appts_core import AppointmentsIntegration, Settings, configure
+    from kalens import AppointmentsIntegration, Settings, configure
 
     appts = configure(AppointmentsIntegration(
         users_repository=UsersRepository,
@@ -45,25 +45,25 @@ from dataclasses import dataclass
 
 from fastapi import APIRouter
 
-from appts_core.api.dependencies.appointments import (
+from kalens.api.dependencies.appointments import (
     AppointmentDependencies,
     build_appointment_dependencies,
 )
-from appts_core.api.routes.appointments import build_appointments_router
-from appts_core.api.routes.availability import build_availability_router
-from appts_core.api.routes.public_booking import build_public_booking_router
-from appts_core.db.appointments import AppointmentsRepository
-from appts_core.db.availability import ClinicAvailabilityRepository
-from appts_core.db.base import BaseRepository
-from appts_core.db.database import get_database, get_repository
-from appts_core.integration import (
+from kalens.api.routes.appointments import build_appointments_router
+from kalens.api.routes.availability import build_availability_router
+from kalens.api.routes.public_booking import build_public_booking_router
+from kalens.db.appointments import AppointmentsRepository
+from kalens.db.availability import ClinicAvailabilityRepository
+from kalens.db.base import BaseRepository
+from kalens.db.database import get_database, get_repository
+from kalens.integration import (
     AppointmentsIntegration,
     get_integration,
     reset_integration,
     set_integration,
 )
-from appts_core.limiter import reset_public_rate_limits
-from appts_core.models.appointment import (
+from kalens.limiter import reset_public_rate_limits
+from kalens.models.appointment import (
     DEFAULT_APPOINTMENT_DURATION_MINUTES,
     AppointmentBase,
     AppointmentCancelIn,
@@ -76,7 +76,7 @@ from appts_core.models.appointment import (
     PublicAppointmentCreate,
     resolve_cancellation_status,
 )
-from appts_core.models.availability import (
+from kalens.models.availability import (
     DEFAULT_WEEKLY_SCHEDULE,
     ClinicAvailabilityBase,
     ClinicAvailabilityInDB,
@@ -85,8 +85,8 @@ from appts_core.models.availability import (
     Weekday,
     WeeklySchedule,
 )
-from appts_core.models.core import CoreModel, DateTimeModelMixin, IDModelMixin
-from appts_core.settings import Settings
+from kalens.models.core import CoreModel, DateTimeModelMixin, IDModelMixin
+from kalens.settings import Settings
 
 __version__ = "0.1.0"
 

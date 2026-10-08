@@ -22,10 +22,10 @@ The host also needs `ix_services_clinic_id` on its own `services` table: the
 overlap query joins through it on every create and every confirm. It is the
 host's index on the host's table, so this library does not create it.
 
-ALREADY HAVE THESE TABLES? Do not run this. `alembic -n appts_core stamp head`
+ALREADY HAVE THESE TABLES? Do not run this. `alembic -n kalens stamp head`
 adopts an existing schema instead -- see docs/migrations.md.
 
-Revision ID: 0001_appts_core
+Revision ID: 0001_kalens
 Revises:
 Create Date: 2026-09-06
 """
@@ -33,7 +33,7 @@ from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
 
-revision = "0001_appts_core"
+revision = "0001_kalens"
 down_revision = None
 branch_labels = None
 depends_on = None

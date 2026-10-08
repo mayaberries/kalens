@@ -1,6 +1,6 @@
 # The integration contract
 
-Everything `appts_core` needs from its host, in one place. If you are wiring
+Everything `kalens` needs from its host, in one place. If you are wiring
 the library into an application, this is the checklist.
 
 The contract is wide — sixteen fields — and that width is honest rather than
@@ -91,19 +91,19 @@ Injected so the emitted OpenAPI schema names real types instead of `Any`.
 
 | Field | What to pass |
 |---|---|
-| `appointment_public_model` | a subclass of `appts_core.AppointmentPublic` re-narrowing `user`, `pet`, `service` |
-| `public_appointment_create_model` | a subclass of `appts_core.PublicAppointmentCreate` re-narrowing `pet` |
+| `appointment_public_model` | a subclass of `kalens.AppointmentPublic` re-narrowing `user`, `pet`, `service` |
+| `public_appointment_create_model` | a subclass of `kalens.PublicAppointmentCreate` re-narrowing `pet` |
 | `subject_public_model` | your `PetProfilePublic` — the `/public/pets` response and the hydrated `pet` field |
 | `service_public_model` | your `ServicePublic` — the `/public/services` response |
 | `owner_link_registration_model` | constructed as `Model(owner_profile_id=...)` and handed to `register_owner_profile_with_clinic` |
 
 ```python
-class AppointmentPublic(appts_core.AppointmentPublic):
+class AppointmentPublic(kalens.AppointmentPublic):
     user: Optional[UserPublic] = None
     pet: Optional[PetProfilePublic] = None
     service: Optional[ServicePublic] = None
 
-class PublicAppointmentCreate(appts_core.PublicAppointmentCreate):
+class PublicAppointmentCreate(kalens.PublicAppointmentCreate):
     pet: PublicPetInput
 ```
 
@@ -148,7 +148,7 @@ on top of appointments, so a host that keeps them needs five things exported
 from here:
 
 ```python
-from appts_core import AppointmentsRepository, AppointmentInDB, AppointmentStatus
+from kalens import AppointmentsRepository, AppointmentInDB, AppointmentStatus
 
 appts = configure(...)
 appts.dependencies.get_appointment_by_id_from_path

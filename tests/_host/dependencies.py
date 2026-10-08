@@ -3,7 +3,7 @@ The reference host's dependencies and predicates.
 
 Auth is deliberately a stub: `Authorization: Bearer <user_id>`. The library
 never inspects a token -- it is handed a user object by whatever the host
-injects -- so reproducing JWT here would test PyJWT, not `appts_core`. What
+injects -- so reproducing JWT here would test PyJWT, not `kalens`. What
 *is* faithfully reproduced is the shape the library depends on: an object with
 `.id`, `.clinic_id` and `.profile.id`, and the 401/403/404 codes the routes'
 tests assert on.
@@ -12,7 +12,7 @@ from typing import Optional
 
 from fastapi import Depends, Header, HTTPException, Path, status
 
-from appts_core import get_repository
+from kalens import get_repository
 from tests._host.models import ClinicPublic, OwnerProfilePublic, ServicePublic, UserPublic
 from tests._host.repositories import (
     ClinicAPIKeysRepository,

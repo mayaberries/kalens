@@ -2,7 +2,7 @@
 The reference host application.
 
 A FastAPI app that implements the integration contract and nothing else. Its
-existence is the actual claim this test suite makes: `appts_core` runs against
+existence is the actual claim this test suite makes: `kalens` runs against
 an application that has never heard of pets-appts.
 
 Route prefixes match what pets-appts mounts today, because the ported tests
@@ -13,7 +13,7 @@ from contextlib import asynccontextmanager
 from databases import Database
 from fastapi import APIRouter, FastAPI
 
-from appts_core import AppointmentsIntegration, AppointmentsModule, Settings, configure
+from kalens import AppointmentsIntegration, AppointmentsModule, Settings, configure
 from tests._host import dependencies as host_deps
 from tests._host.models import (
     AppointmentPublic,

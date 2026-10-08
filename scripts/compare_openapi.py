@@ -67,7 +67,7 @@ def main() -> int:
     library = operations(app.openapi())
 
     print(f"pets-appts : {len(reference)} operations in the extracted slice")
-    print(f"appts_core : {len(library)} operations")
+    print(f"kalens : {len(library)} operations")
 
     failures = 0
     for key in sorted(set(reference) | set(library)):

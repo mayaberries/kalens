@@ -14,8 +14,8 @@ from databases import Database
 from fastapi import Depends
 from starlette.requests import Request
 
-from appts_core.db.base import BaseRepository
-from appts_core.integration import get_settings
+from kalens.db.base import BaseRepository
+from kalens.integration import get_settings
 
 
 def get_database(request: Request) -> Database:

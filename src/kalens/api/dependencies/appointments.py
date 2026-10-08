@@ -22,10 +22,10 @@ from typing import Any, Callable
 
 from fastapi import Body, Depends, HTTPException, Path, status
 
-from appts_core.db.appointments import AppointmentsRepository
-from appts_core.db.database import get_repository
-from appts_core.integration import AppointmentsIntegration
-from appts_core.models.appointment import (
+from kalens.db.appointments import AppointmentsRepository
+from kalens.db.database import get_repository
+from kalens.integration import AppointmentsIntegration
+from kalens.models.appointment import (
     AppointmentInDB,
     AppointmentRequestIn,
     AppointmentStatus,

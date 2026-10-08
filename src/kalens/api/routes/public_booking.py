@@ -16,16 +16,16 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from pydantic import EmailStr
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_409_CONFLICT, HTTP_201_CREATED
 
-from appts_core.db.appointments import AppointmentsRepository
-from appts_core.db.database import get_repository
-from appts_core.integration import AppointmentsIntegration
-from appts_core.limiter import enforce_public_rate_limits
-from appts_core.models.appointment import AppointmentCreate
+from kalens.db.appointments import AppointmentsRepository
+from kalens.db.database import get_repository
+from kalens.integration import AppointmentsIntegration
+from kalens.limiter import enforce_public_rate_limits
+from kalens.models.appointment import AppointmentCreate
 
 
 def build_public_booking_router(integration: AppointmentsIntegration) -> APIRouter:
     # Rate limiting applied once, router-wide, rather than per-route -- see
-    # appts_core/limiter.py for why this replaced two stacked slowapi
+    # kalens/limiter.py for why this replaced two stacked slowapi
     # decorators. Ordered before get_clinic_from_public_key deliberately: an
     # over-budget caller gets rejected before we even touch the DB for key
     # lookup.

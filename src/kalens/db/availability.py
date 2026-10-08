@@ -4,8 +4,8 @@ from uuid import uuid4
 
 from databases.core import Database
 
-from appts_core.db.base import BaseRepository
-from appts_core.models.availability import (
+from kalens.db.base import BaseRepository
+from kalens.models.availability import (
     ClinicAvailabilityInDB,
     ClinicAvailabilityUpdate,
     DEFAULT_WEEKLY_SCHEDULE,

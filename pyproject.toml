@@ -36,13 +36,13 @@ test = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/appts_core"]
+packages = ["src/kalens"]
 
 # The migration scripts are data files, not importable modules, but Alembic
 # resolves them by filesystem path off the installed package -- so they have
 # to ship inside the wheel.
 [tool.hatch.build.targets.wheel.force-include]
-"src/appts_core/migrations" = "appts_core/migrations"
+"src/kalens/migrations" = "kalens/migrations"
 
 [tool.pytest.ini_options]
 asyncio_mode = "strict"

@@ -1,7 +1,7 @@
 # Migrations
 
-`appts_core` ships its own Alembic chain and keeps it in its own version
-table, **`appts_core_alembic_version`**. Your application's history stays in
+`kalens` ships its own Alembic chain and keeps it in its own version
+table, **`kalens_alembic_version`**. Your application's history stays in
 `alembic_version` and the two never see each other: you upgrade them
 separately, and a revision in one can never be mistaken for a revision in the
 other.
@@ -11,8 +11,8 @@ other.
 Add a second section to your `alembic.ini`:
 
 ```ini
-[appts_core]
-script_location = %(here)s/.venv/lib/python3.13/site-packages/appts_core/migrations
+[kalens]
+script_location = %(here)s/.venv/lib/python3.13/site-packages/kalens/migrations
 sqlalchemy.url  = postgresql://user:pass@localhost:5432/yourdb
 ```
 
@@ -20,20 +20,20 @@ If you'd rather not hardcode the site-packages path, resolve it at runtime:
 
 ```python
 from pathlib import Path
-import appts_core
-print(Path(next(iter(appts_core.__path__))) / "migrations")
+import kalens
+print(Path(next(iter(kalens.__path__))) / "migrations")
 ```
 
-The URL can also come from `APPTS_CORE_DATABASE_URL` or `DATABASE_URL` in the
+The URL can also come from `KALENS_DATABASE_URL` or `DATABASE_URL` in the
 environment, in that order, if `sqlalchemy.url` is unset. `postgres://` and
 `+asyncpg` are normalised, so the same URL your app uses will work.
 
 Then:
 
 ```bash
-alembic -n appts_core upgrade head
-alembic -n appts_core current
-alembic -n appts_core downgrade base
+alembic -n kalens upgrade head
+alembic -n kalens current
+alembic -n kalens downgrade base
 ```
 
 ## Greenfield
@@ -42,7 +42,7 @@ Order matters, because the foreign keys are real:
 
 ```bash
 alembic upgrade head                    # 1. your tables: users, services, clinics, subjects
-alembic -n appts_core upgrade head      # 2. appointments, clinic_availability
+alembic -n kalens upgrade head      # 2. appointments, clinic_availability
 ```
 
 Step 2 fails loudly if step 1 didn't happen. That's the prerequisite contract
@@ -55,7 +55,7 @@ library-owned table, so it cannot be created until step 2 has run:
 
 ```
 1. host     alembic upgrade <the revision before evaluations>
-2. library  alembic -n appts_core upgrade head
+2. library  alembic -n kalens upgrade head
 3. host     alembic upgrade head          # the evaluations FK now resolves
 ```
 
@@ -70,10 +70,10 @@ migrations, and the data is live. **Do not run `upgrade`** — it would try to
 `CREATE TABLE appointments` and fail.
 
 ```bash
-alembic -n appts_core stamp head
+alembic -n kalens stamp head
 ```
 
-That writes `0001_appts_core` into `appts_core_alembic_version` and creates
+That writes `0001_kalens` into `kalens_alembic_version` and creates
 nothing. From then on the library's future revisions apply normally.
 
 You should also stop your own chain from re-creating these tables. The
@@ -140,7 +140,7 @@ replace is a no-op there, and creates it for a host that has none.
 ## Downgrade
 
 ```bash
-alembic -n appts_core downgrade base
+alembic -n kalens downgrade base
 ```
 
 Drops both tables. It deliberately **does not drop

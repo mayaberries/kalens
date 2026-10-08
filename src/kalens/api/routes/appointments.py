@@ -13,11 +13,11 @@ from typing import Any, List, Optional
 from fastapi import APIRouter, Body, status
 from fastapi.param_functions import Depends
 
-from appts_core.api.dependencies.appointments import AppointmentDependencies
-from appts_core.db.appointments import AppointmentsRepository
-from appts_core.db.database import get_repository
-from appts_core.integration import AppointmentsIntegration
-from appts_core.models.appointment import (
+from kalens.api.dependencies.appointments import AppointmentDependencies
+from kalens.db.appointments import AppointmentsRepository
+from kalens.db.database import get_repository
+from kalens.integration import AppointmentsIntegration
+from kalens.models.appointment import (
     AppointmentCancelIn,
     AppointmentCreate,
     AppointmentInDB,

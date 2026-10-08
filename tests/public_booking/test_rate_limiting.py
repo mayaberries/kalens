@@ -14,15 +14,15 @@ import pytest
 from fastapi import FastAPI
 from httpx import AsyncClient
 
-import appts_core
+import kalens
 
 pytestmark = pytest.mark.asyncio
 
 
 class TestPublicRateLimits:
     @pytest.fixture
-    def appts_settings(self) -> appts_core.Settings:
-        return appts_core.Settings(public_rate_limit_per_key=3, public_rate_limit_per_ip=5)
+    def appts_settings(self) -> kalens.Settings:
+        return kalens.Settings(public_rate_limit_per_key=3, public_rate_limit_per_ip=5)
 
     async def test_the_per_key_budget_is_enforced(
         self, app: FastAPI, client: AsyncClient, service_a, clinic_a_public_key

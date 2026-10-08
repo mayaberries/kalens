@@ -15,7 +15,7 @@ from limits import RateLimitItem, parse
 from limits.storage import MemoryStorage, Storage, storage_from_string
 from limits.strategies import MovingWindowRateLimiter
 
-from appts_core.integration import get_settings
+from kalens.integration import get_settings
 
 
 def _build_storage(redis_url: Optional[str]) -> Storage:
@@ -91,7 +91,7 @@ def enforce_public_rate_limits(request: Request) -> None:
     down someone enumerating pk_live_/pk_test_ values, which the per-key
     limiter alone can't catch since each guessed key starts its own fresh
     bucket. Deliberately kept well above the per-key limit (see
-    appts_core/settings.py) so it never binds during ordinary single-key
+    kalens/settings.py) so it never binds during ordinary single-key
     traffic.
     """
     state = _state()
@@ -147,7 +147,7 @@ def enforce_clinic_availability_read_rate_limits(request: Request, clinic_id: st
 # function's signature and hit the bucket with current_user.id.
 def enforce_clinic_availability_write_rate_limits(request: Request, clinic_id: str = Path(...)) -> None:
     """PUT /clinics/{clinic_id}/availability -- separate bucket from the
-    read tier on purpose, see appts_core/settings.py, so public read traffic
+    read tier on purpose, see kalens/settings.py, so public read traffic
     can never exhaust the clinic admin's own write budget."""
     _enforce_clinic_availability_limit(
         request, clinic_id, _state().clinic_availability_write_limit, "clinic-availability-write"

@@ -4,7 +4,7 @@ from typing import Any, Optional
 
 from pydantic import EmailStr, Field, field_validator
 
-from appts_core.models.core import CoreModel, DateTimeModelMixin, IDModelMixin
+from kalens.models.core import CoreModel, DateTimeModelMixin, IDModelMixin
 
 
 class AppointmentStatus(str, Enum):

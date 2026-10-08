@@ -118,7 +118,7 @@ The fork is older than this extraction in some places and newer in others.
 `resolve_cancellation_status` — so it has no `declined` distinction and no
 record of who cancelled or why. Those come from this library. Going the other
 way, `assigned_staff_user_id` and calls exist only in the fork. Adopting
-`appts_core` in `human-appts` means taking the cancellation work and
+`kalens` in `human-appts` means taking the cancellation work and
 re-applying the staff-assignment work on top.
 
 ### What this library does not give you for health

@@ -10,7 +10,7 @@ from uuid import uuid4
 
 from databases import Database
 
-from appts_core import BaseRepository
+from kalens import BaseRepository
 from tests._host.models import (
     ClinicOwnerProfileRegistration,
     ClinicPublic,

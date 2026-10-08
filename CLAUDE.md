@@ -6,8 +6,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `kalens` is the scheduling engine from the sibling repo `../pets-appts`, **extracted verbatim**: appointments, weekly clinic availability, and the public booking surface. It's a FastAPI library, not an app. It owns two tables (`appointments` and `clinic_availability`). Everything else (users, services, clinics/tenants, and the booking's *subject*, today a pet) belongs to the host. The host supplies those through `AppointmentsIntegration`. It ships as a pip package pinned to a git tag (`@v0.1.0`), not via PyPI.
 
-`kalens` is the codename and the distribution name only. The import package (`appts_core`), the Alembic section (`-n appts_core`), the version table (`appts_core_alembic_version`) and the `APPTS_CORE_*` env vars keep the old name, because renaming them breaks hosts and already-stamped databases. Don't rename them in passing.
-
 "Verbatim" is a design constraint, not an accident. The code still says `pet_id`, `clinic_id` and `get_pet_by_id` on purpose. Don't generalise names or behaviour in passing. `docs/adapting.md` lists the planned generalisations and their order, and none of them have been made. Function bodies and comments copied from pets-appts should stay as they are. Only imports and annotations were changed.
 
 ## Commands
@@ -23,7 +21,7 @@ make db-down          # stop and drop the volume
 .venv/bin/pytest tests/appointments/test_cancel.py::test_name -v   # single test
 ```
 
-- Tests use **port 5433, never 5432** (that's pets-appts' DB). Each session runs `DROP DATABASE ... WITH (FORCE)` on `APPTS_CORE_TEST_DB` (default `appts_core_test`). Set the server with `APPTS_CORE_DATABASE_URL`.
+- Tests use **port 5433, never 5432** (that's pets-appts' DB). Each session runs `DROP DATABASE ... WITH (FORCE)` on `KALENS_TEST_DB` (default `kalens_test`). Set the server with `KALENS_DATABASE_URL`.
 - `compare-schema` and `compare-openapi` read `../pets-appts` and only read it. You can override the paths with `PETS_APPTS_BACKEND` and `PETS_APPTS_OPENAPI`. `compare-schema` runs pets-appts' Alembic chain on a throwaway DB and diffs columns, constraints, indexes, triggers and FK delete rules against this library's chain. `compare-openapi` diffs paths, methods, operation ids and status codes, but not response bodies.
 - Dependency versions in `pyproject.toml` are pinned to exactly match `pets-appts/backend/requirements.txt`. Installing the library must never change the host's versions, so don't bump them on their own.
 
@@ -50,7 +48,7 @@ There's no ORM. Repositories run raw SQL through `databases`. Every appointment 
 
 ### Migrations
 
-The library has its own Alembic chain in `src/appts_core/migrations/` with its own version table, `appts_core_alembic_version`. Hosts run `alembic -n appts_core ...` as a separate step after their own migrations. FKs to the host tables are how the contract is enforced. The `migrations` directory is force-included in the wheel because Alembic finds it by filesystem path. There's no `target_metadata`, so `--autogenerate` doesn't work and revisions are written by hand with `op`. `0001` squashes five pets-appts revisions, which `docs/migrations.md` maps. Downgrade deliberately leaves `update_updated_at_column()` in place.
+The library has its own Alembic chain in `src/kalens/migrations/` with its own version table, `kalens_alembic_version`. Hosts run `alembic -n kalens ...` as a separate step after their own migrations. FKs to the host tables are how the contract is enforced. The `migrations` directory is force-included in the wheel because Alembic finds it by filesystem path. There's no `target_metadata`, so `--autogenerate` doesn't work and revisions are written by hand with `op`. `0001` squashes five pets-appts revisions, which `docs/migrations.md` maps. Downgrade deliberately leaves `update_updated_at_column()` in place.
 
 ### Tests
 

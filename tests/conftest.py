@@ -24,16 +24,16 @@ from databases import Database
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
-import appts_core
+import kalens
 from tests._host.app import build_app
 from tests._host.schema import HOST_TABLES_DDL
 
 pytest_plugins = ["tests._fixtures.entities"]
 
 BASE_URL = os.environ.get(
-    "APPTS_CORE_DATABASE_URL", "postgresql://postgres:postgres@localhost:5433/postgres"
+    "KALENS_DATABASE_URL", "postgresql://postgres:postgres@localhost:5433/postgres"
 )
-TEST_DB = os.environ.get("APPTS_CORE_TEST_DB", "appts_core_test")
+TEST_DB = os.environ.get("KALENS_TEST_DB", "kalens_test")
 TEST_URL = BASE_URL.rsplit("/", 1)[0] + "/" + TEST_DB
 
 
@@ -41,7 +41,7 @@ def _library_migrations_config(url: str) -> Config:
     """Point Alembic at the migrations shipped inside the installed package --
     the same resolution a host does with `script_location` in its own ini."""
     cfg = Config()
-    cfg.set_main_option("script_location", str(Path(next(iter(appts_core.__path__))) / "migrations"))
+    cfg.set_main_option("script_location", str(Path(next(iter(kalens.__path__))) / "migrations"))
     cfg.set_main_option("sqlalchemy.url", url)
     return cfg
 
@@ -71,7 +71,7 @@ def migrated_database() -> str:
 
 
 @pytest.fixture
-def appts_settings() -> Optional[appts_core.Settings]:
+def appts_settings() -> Optional[kalens.Settings]:
     """Override in a test class to build the app with different Settings --
     see tests/public_booking/test_rate_limiting.py. There is one app and one
     installed integration per test, so a test that wants different settings
@@ -82,12 +82,12 @@ def appts_settings() -> Optional[appts_core.Settings]:
 
 @pytest.fixture
 def app_and_module(
-    migrated_database: str, appts_settings: Optional[appts_core.Settings]
-) -> Tuple[FastAPI, appts_core.AppointmentsModule]:
+    migrated_database: str, appts_settings: Optional[kalens.Settings]
+) -> Tuple[FastAPI, kalens.AppointmentsModule]:
     # configure() is re-run per test so a test may install different Settings;
     # reset() first so the previous test's integration and rate-limit buckets
     # can't leak into this one.
-    appts_core.reset()
+    kalens.reset()
     return build_app(migrated_database, appts_settings)
 
 
@@ -97,7 +97,7 @@ def app(app_and_module) -> FastAPI:
 
 
 @pytest.fixture
-def appts(app_and_module) -> appts_core.AppointmentsModule:
+def appts(app_and_module) -> kalens.AppointmentsModule:
     return app_and_module[1]
 
 

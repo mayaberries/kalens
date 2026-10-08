@@ -2,7 +2,7 @@
 The reference host's own models.
 
 Two of these are subclasses of the library's, which is the pattern every real
-host follows: `appts_core` types the hydrated fields loosely because it can't
+host follows: `kalens` types the hydrated fields loosely because it can't
 know what a subject or a user looks like, and the host narrows them back so
 the emitted OpenAPI schema names real models.
 """
@@ -10,7 +10,7 @@ from typing import Optional
 
 from pydantic import BaseModel, EmailStr, model_validator
 
-import appts_core
+import kalens
 
 
 class ClinicPublic(BaseModel):
@@ -74,15 +74,15 @@ class ClinicOwnerProfileRegistration(BaseModel):
     owner_profile_id: str
 
 
-class AppointmentPublic(appts_core.AppointmentPublic):
-    """Re-narrows the three fields appts_core leaves as `Any`. This is what
+class AppointmentPublic(kalens.AppointmentPublic):
+    """Re-narrows the three fields kalens leaves as `Any`. This is what
     the routes declare as their response_model."""
     user: Optional[UserPublic] = None
     pet: Optional[PetProfilePublic] = None
     service: Optional[ServicePublic] = None
 
 
-class PublicAppointmentCreate(appts_core.PublicAppointmentCreate):
+class PublicAppointmentCreate(kalens.PublicAppointmentCreate):
     pet: PublicPetInput
 
 

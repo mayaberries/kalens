@@ -1,5 +1,5 @@
 """
-The host tables `appts_core` requires but does not own.
+The host tables `kalens` requires but does not own.
 
 This is the prerequisite contract from docs/integration-contract.md, written
 out as the smallest schema that satisfies it. Deliberately *not* a copy of

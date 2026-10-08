@@ -4,9 +4,9 @@ from uuid import uuid4
 
 from databases.core import Database
 
-from appts_core.db.base import BaseRepository
-from appts_core.integration import coerce, get_integration, get_settings
-from appts_core.models.appointment import (
+from kalens.db.base import BaseRepository
+from kalens.integration import coerce, get_integration, get_settings
+from kalens.models.appointment import (
     AppointmentCreate,
     AppointmentPublic,
     AppointmentInDB,

@@ -1,7 +1,7 @@
 """
 The seam between this library and its host application.
 
-This is the only genuinely new code in `appts_core`. Everything else is the
+This is the only genuinely new code in `kalens`. Everything else is the
 pets-appts scheduling engine copied across with its imports repointed at this
 module.
 
@@ -30,12 +30,12 @@ WHY THE MODELS ARE INJECTED TOO
 from dataclasses import dataclass, field
 from typing import Any, Callable, Optional
 
-from appts_core.settings import Settings
+from kalens.settings import Settings
 
 
 @dataclass(frozen=True)
 class AppointmentsIntegration:
-    """Everything `appts_core` needs from its host, supplied once at startup.
+    """Everything `kalens` needs from its host, supplied once at startup.
 
     Every `type` below is a repository *class*, not an instance -- they are
     constructed per-request with the shared `databases.Database`, exactly as
@@ -79,10 +79,10 @@ class AppointmentsIntegration:
     get_owner_profile_id_for_user: Callable  # (*, user) -> str
 
     # --- host models, so the emitted OpenAPI schema stays unchanged -------
-    # Subclass of appts_core.models.AppointmentPublic that re-narrows
+    # Subclass of kalens.models.AppointmentPublic that re-narrows
     # `user`, `pet` and `service` to the host's own public models.
     appointment_public_model: type
-    # Subclass of appts_core.models.PublicAppointmentCreate re-narrowing `pet`.
+    # Subclass of kalens.models.PublicAppointmentCreate re-narrowing `pet`.
     public_appointment_create_model: type
     # The host's PetProfilePublic / ServicePublic / ClinicOwnerProfileRegistration.
     subject_public_model: type
@@ -96,7 +96,7 @@ _integration: Optional[AppointmentsIntegration] = None
 
 
 def set_integration(integration: AppointmentsIntegration) -> None:
-    """Install the host contract. Called by `appts_core.configure()`."""
+    """Install the host contract. Called by `kalens.configure()`."""
     global _integration
     _integration = integration
 
@@ -108,11 +108,11 @@ def get_integration() -> AppointmentsIntegration:
     rather than import time, which is what lets them stay plain module-level
     classes. Dependencies and routers cannot do that -- FastAPI reads their
     signatures when they are defined -- so those are built by factories that
-    run after `configure()`. See `appts_core.configure`.
+    run after `configure()`. See `kalens.configure`.
     """
     if _integration is None:
         raise RuntimeError(
-            "appts_core is not configured. Call appts_core.configure(...) with an "
+            "kalens is not configured. Call kalens.configure(...) with an "
             "AppointmentsIntegration before importing routers or using repositories."
         )
     return _integration

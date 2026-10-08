@@ -16,14 +16,14 @@ from typing import Any
 
 from fastapi import APIRouter, Body, Depends
 
-from appts_core.db.availability import ClinicAvailabilityRepository
-from appts_core.db.database import get_repository
-from appts_core.integration import AppointmentsIntegration
-from appts_core.limiter import (
+from kalens.db.availability import ClinicAvailabilityRepository
+from kalens.db.database import get_repository
+from kalens.integration import AppointmentsIntegration
+from kalens.limiter import (
     enforce_clinic_availability_read_rate_limits,
     enforce_clinic_availability_write_rate_limits,
 )
-from appts_core.models.availability import ClinicAvailabilityInDB, ClinicAvailabilityUpdate
+from kalens.models.availability import ClinicAvailabilityInDB, ClinicAvailabilityUpdate
 
 
 def build_availability_router(integration: AppointmentsIntegration) -> APIRouter:

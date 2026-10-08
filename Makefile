@@ -2,9 +2,9 @@ VENV := .venv
 PY   := $(VENV)/bin/python
 PIP  := $(VENV)/bin/pip
 
-# The test suite drops and recreates APPTS_CORE_TEST_DB on every run, so this
+# The test suite drops and recreates KALENS_TEST_DB on every run, so this
 # points at kalens' own container (port 5433), never pets-appts' 5432.
-export APPTS_CORE_DATABASE_URL ?= postgresql://postgres:postgres@localhost:5433/postgres
+export KALENS_DATABASE_URL ?= postgresql://postgres:postgres@localhost:5433/postgres
 
 .PHONY: help venv install db-up db-down db-logs test verify compare-schema compare-openapi lint clean
 

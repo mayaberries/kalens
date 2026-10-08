@@ -14,7 +14,7 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
-import appts_core
+import kalens
 from tests._host.repositories import (
     ClinicAPIKeysRepository,
     ClinicsRepository,
@@ -30,9 +30,9 @@ def reset_rate_limits():
     """The limiter's storage is process-global, so a test that exhausts a
     bucket would otherwise 429 every test after it. pets-appts carries the
     identical autouse fixture for the identical reason."""
-    appts_core.reset_public_rate_limits()
+    kalens.reset_public_rate_limits()
     yield
-    appts_core.reset_public_rate_limits()
+    kalens.reset_public_rate_limits()
 
 
 def auth(user) -> dict:

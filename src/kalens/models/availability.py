@@ -4,7 +4,7 @@ import datetime
 
 from pydantic import Field, model_validator
 
-from appts_core.models.core import CoreModel, DateTimeModelMixin, IDModelMixin
+from kalens.models.core import CoreModel, DateTimeModelMixin, IDModelMixin
 
 
 class Weekday(str, Enum):

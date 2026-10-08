@@ -40,7 +40,7 @@ For a generalisation from `docs/adapting.md`, name the seam (subject, provider s
 
 - **Whether it breaks verbatim.** The library is copied unchanged from pets-appts. If the change alters copied behaviour or names, say so, and say whether pets-appts needs the same change or will drift on purpose.
 - **Whether it touches the contract.** If yes, list all three places that change together: `integration.py`, `docs/integration-contract.md`, `tests/_host/`.
-- **Whether it needs a migration.** If yes, the new revision goes in `src/appts_core/migrations/versions/` and is written by hand (there's no autogenerate). New appointment columns also go in `APPOINTMENT_COLUMNS`.
+- **Whether it needs a migration.** If yes, the new revision goes in `src/kalens/migrations/versions/` and is written by hand (there's no autogenerate). New appointment columns also go in `APPOINTMENT_COLUMNS`.
 - **Whether it changes intended behaviour.** For example: overlap is checked only against confirmed appointments, and some lookups return 404 instead of 403. Changing one of those is a decision, not a bug fix, so the issue has to say so (see `CLAUDE.md`).
 
 ## Style

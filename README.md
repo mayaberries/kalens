@@ -22,13 +22,10 @@ pet, a patient, a garment) — stays with the host and arrives through
 pip install "kalens @ git+ssh://git@github.com/mayaberries/kalens.git@v0.1.0"
 ```
 
-`kalens` is the project codename and the distribution name; the import name
-is still `appts_core`, as are the Alembic section and its version table.
-
 ## Wire it up
 
 ```python
-from appts_core import AppointmentsIntegration, Settings, configure
+from kalens import AppointmentsIntegration, Settings, configure
 
 appts = configure(AppointmentsIntegration(
     users_repository=UsersRepository,
@@ -63,12 +60,12 @@ Two host models are subclasses of this library's, re-narrowing the fields the
 library can't type:
 
 ```python
-class AppointmentPublic(appts_core.AppointmentPublic):
+class AppointmentPublic(kalens.AppointmentPublic):
     user: Optional[UserPublic] = None
     pet: Optional[PetProfilePublic] = None
     service: Optional[ServicePublic] = None
 
-class PublicAppointmentCreate(appts_core.PublicAppointmentCreate):
+class PublicAppointmentCreate(kalens.PublicAppointmentCreate):
     pet: PublicPetInput
 ```
 
@@ -79,11 +76,11 @@ pre-extraction one. Full contract in
 ## Migrate
 
 The library keeps its own Alembic chain in its own version table
-(`appts_core_alembic_version`), so it upgrades independently of the host's.
+(`kalens_alembic_version`), so it upgrades independently of the host's.
 
 ```bash
-alembic -n appts_core upgrade head    # greenfield
-alembic -n appts_core stamp head      # adopting a database that already has these tables
+alembic -n kalens upgrade head    # greenfield
+alembic -n kalens stamp head      # adopting a database that already has these tables
 ```
 
 Host tables must exist first — the foreign keys are the enforcement. See

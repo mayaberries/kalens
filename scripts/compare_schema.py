@@ -4,7 +4,7 @@ Prove the library's migration produces the same schema pets-appts does.
 Builds two throwaway databases side by side on the kalens Postgres:
 
     reference  <- pets-appts' own alembic chain, `upgrade head`
-    library    <- the host-prerequisite DDL, then appts_core's chain
+    library    <- the host-prerequisite DDL, then kalens's chain
 
 and diffs `appointments` and `clinic_availability` between them -- columns,
 types, nullability, defaults, indexes, constraints and foreign-key delete
@@ -27,20 +27,20 @@ import sqlalchemy
 from alembic import command
 from alembic.config import Config
 
-import appts_core
+import kalens
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from tests._host.schema import HOST_TABLES_DDL  # noqa: E402
 
 BASE_URL = os.environ.get(
-    "APPTS_CORE_DATABASE_URL", "postgresql://postgres:postgres@localhost:5433/postgres"
+    "KALENS_DATABASE_URL", "postgresql://postgres:postgres@localhost:5433/postgres"
 )
 PETS_BACKEND = Path(
     os.environ.get("PETS_APPTS_BACKEND", Path(__file__).resolve().parents[2] / "pets-appts" / "backend")
 )
 
-REFERENCE_DB = "appts_core_cmp_reference"
-LIBRARY_DB = "appts_core_cmp_library"
+REFERENCE_DB = "kalens_cmp_reference"
+LIBRARY_DB = "kalens_cmp_library"
 TABLES = ("appointments", "clinic_availability")
 
 COLUMNS_SQL = """
@@ -132,7 +132,7 @@ def build_library() -> None:
     engine.dispose()
 
     cfg = Config()
-    cfg.set_main_option("script_location", str(Path(next(iter(appts_core.__path__))) / "migrations"))
+    cfg.set_main_option("script_location", str(Path(next(iter(kalens.__path__))) / "migrations"))
     cfg.set_main_option("sqlalchemy.url", url_for(LIBRARY_DB))
     command.upgrade(cfg, "head")
 
@@ -156,7 +156,7 @@ def snapshot(db: str) -> dict:
 def main() -> int:
     print(f"reference : pets-appts alembic  -> {REFERENCE_DB}")
     build_reference()
-    print(f"library   : appts_core alembic  -> {LIBRARY_DB}")
+    print(f"library   : kalens alembic  -> {LIBRARY_DB}")
     build_library()
 
     reference, library = snapshot(REFERENCE_DB), snapshot(LIBRARY_DB)
@@ -173,7 +173,7 @@ def main() -> int:
         for row in only_ref:
             print(f"      only in pets-appts : {row}")
         for row in only_lib:
-            print(f"      only in appts_core : {row}")
+            print(f"      only in kalens : {row}")
 
     drop(REFERENCE_DB)
     drop(LIBRARY_DB)
