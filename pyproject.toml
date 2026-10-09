@@ -36,13 +36,12 @@ test = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/kalens"]
-
 # The migration scripts are data files, not importable modules, but Alembic
 # resolves them by filesystem path off the installed package -- so they have
-# to ship inside the wheel.
-[tool.hatch.build.targets.wheel.force-include]
-"src/kalens/migrations" = "kalens/migrations"
+# to ship inside the wheel. They live under src/kalens, so `packages` already
+# includes them; force-including them too adds every file twice, which
+# hatchling rejects.
+packages = ["src/kalens"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "strict"
