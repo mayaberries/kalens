@@ -69,4 +69,4 @@ Module and function docstrings explain *why*, often under capitalised headings (
 
 ## Git identity
 
-The project author is `Maya Morales <maymorales@proton.me>` (see `pyproject.toml`). Per the parent `../CLAUDE.md`, set git identity with `--local` only and never `--global`, because the global config is a different, work identity. This repo doesn't have a local identity set yet.
+The project author is `Maya Morales <aka.mayberries@proton.me>` (see `pyproject.toml`). Per the parent `../CLAUDE.md`, set git identity with `--local` only and never `--global`, because the global config is a different, work identity. This repo doesn't have a local identity set yet.

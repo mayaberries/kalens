@@ -9,7 +9,7 @@ description = "The scheduling engine extracted verbatim from pets-appts: appoint
 readme = "README.md"
 requires-python = ">=3.13"
 license = { text = "MIT" }
-authors = [{ name = "Maya Morales", email = "maymorales@proton.me" }]
+authors = [{ name = "Maya Morales", email = "aka.mayberries@proton.me" }]
 
 # Pinned to match pets-appts/backend/requirements.txt exactly. Installing this
 # library must never move a host application's own versions -- an extracted
