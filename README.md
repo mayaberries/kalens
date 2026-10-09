@@ -19,7 +19,7 @@ pet, a patient, a garment) — stays with the host and arrives through
 ## Install
 
 ```bash
-pip install "kalens @ git+ssh://git@github.com/mayaberries/kalens.git@v0.1.0"
+pip install "kalens @ git+ssh://git@github.com/mayaberries/kalens.git@v0.1.0-alpha.1"
 ```
 
 ## Wire it up
