@@ -30,7 +30,7 @@ slots, and double-booking per practitioner or room rather than per tenant.
 ## Install
 
 ```bash
-pip install "kalens @ git+ssh://git@github.com/mayaberries/kalens.git@v0.1.0-alpha.2"
+pip install "kalens @ git+ssh://git@github.com/mayaberries/kalens.git@v0.1.0-alpha.3"
 ```
 
 ## Wire it up
