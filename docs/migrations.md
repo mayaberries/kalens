@@ -65,8 +65,8 @@ alternative — `depends_on` across two chains — Alembic does not support.
 
 ## Adopting a database that already has these tables
 
-This is the pets-appts case: the tables exist, created by that repo's own
-migrations, and the data is live. **Do not run `upgrade`** — it would try to
+For a host whose own migrations already created `appointments` and
+`clinic_availability`, with live data in them. **Do not run `upgrade`** — it would try to
 `CREATE TABLE appointments` and fail.
 
 ```bash
@@ -76,26 +76,12 @@ alembic -n kalens stamp head
 That writes `0001_kalens` into `kalens_alembic_version` and creates
 nothing. From then on the library's future revisions apply normally.
 
-You should also stop your own chain from re-creating these tables. The
-library's revision is a squash of five pets-appts revisions:
-
-| pets-appts revision | What of it moved here |
-|---|---|
-| `b732937fb214` | the `create_appointments_table` half only — the other six tables stay yours |
-| `a1f3c9d8e2b4` | surrogate `id` PK, `start_time`/`end_time`, `ix_appointments_service_id_start_time`. **`ix_services_clinic_id` stays yours** — it's on your table |
-| `b94eca323053` | `pet_id` + `ix_appointments_pet_id` |
-| `38488164cd7a` | `cancellation_reason`, `cancelled_by` |
-| `a26a66e8e83f` | the whole `clinic_availability` table |
-
-Verify before and after:
-
-```bash
-make compare-schema
-```
-
-That builds both chains side by side on throwaway databases and diffs columns,
-constraints, indexes and triggers. It currently reports **identical** across
-all four — which is the claim that lets you stamp rather than migrate.
+Stamping is only safe if your tables match what the revision below creates,
+down to column types, delete rules, constraint and index names, and triggers.
+Check that before you stamp; diffing your schema against a throwaway database
+migrated with `alembic -n kalens upgrade head` is the reliable way. Then stop
+your own chain from re-creating these tables. `ix_services_clinic_id` stays
+yours either way — it's on your table.
 
 ## What the library's revision creates
 
@@ -121,8 +107,7 @@ Trigger: `update_appointments_modtime`.
 **The three delete rules are all different, on purpose.** Deleting a user
 takes their appointments with them (CASCADE). Deleting a *subject* that has
 appointment history is blocked outright (RESTRICT) rather than silently
-erasing it — pets-appts carries a TODO wondering whether soft delete would be
-better, and that question moved across unanswered. Deleting the staff account
+erasing it — whether soft delete would be better is an open question. Deleting the staff account
 that cancelled something loses only the attribution (SET NULL): appointment
 history must neither disappear with a departing employee nor block their
 account being removed.
@@ -146,7 +131,3 @@ alembic -n kalens downgrade base
 Drops both tables. It deliberately **does not drop
 `update_updated_at_column()`** — your own tables' triggers call it, and this
 migration may not be what created it. Dropping it would break the host.
-
-There is no path back to the intermediate states of the five squashed
-revisions. They were never reachable from a database that had this library
-installed, so they aren't reproduced.

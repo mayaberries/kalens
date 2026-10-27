@@ -53,8 +53,8 @@ the shared `databases.Database`, the same way `get_repository` does it.
 | `services_repository` | `get_service_by_id_for_clinic(*, id, clinic_id)` · `list_services_by_clinic_id(*, clinic_id)` |
 | `owner_link_repository` | `get_pivot_for_clinic_and_owner(*, clinic_id, owner_profile_id)` · `register_owner_profile_with_clinic(*, clinic_id, registration)` — must be idempotent, it is called on every public booking |
 
-The subject repository's method names are pets-shaped because the extraction
-is verbatim. Renaming them is a breaking change to this contract, covered in
+The subject repository's method names are still pet-shaped. Renaming them is
+a breaking change to this contract, covered in
 [adapting.md](adapting.md).
 
 Objects returned must expose: a user's `.id`, `.is_active`, `.clinic_id` and
@@ -112,7 +112,7 @@ set; `.new_pet` is passed straight to `subject_repository.create_pet`.
 
 ### `settings`
 
-Optional. Defaults reproduce pets-appts exactly.
+Optional. Defaults suit a single small deployment.
 
 | Setting | Default |
 |---|---|
@@ -134,17 +134,17 @@ itself. The host still owns:
 - **The connection.** Open a `databases.Database` in your lifespan and put it
   on `app.state`. The library only ever reads it back.
 - **Route prefixes.** The library fixes route `name=` values, not paths. What
-  pets-appts mounts today:
+  the reference host mounts:
   `/services/{service_id}/appointments`, `/public`,
   `/clinics/{clinic_id}/availability`.
 - **Authentication**, of both kinds — JWT and the publishable key.
 
 ---
 
-## If you kept evaluations in the host
+## If your host has evaluations
 
-Evaluations are not part of this library, but in pets-appts they sit directly
-on top of appointments, so a host that keeps them needs five things exported
+Evaluations are not part of this library, but they sit naturally on top of
+appointments, so a host that has them needs five things exported
 from here:
 
 ```python
@@ -165,12 +165,12 @@ Two consequences worth knowing:
    calling `appointments_repo.mark_as_completed` is the only thing that moves
    an appointment to `completed`. The library preserves `mark_as_completed`
    but never calls it. A confirmed appointment nobody rates stays `confirmed`
-   forever — a known gap in pets-appts, carried across unchanged.
+   forever — a known gap, tracked in [adapting.md](adapting.md).
 2. **Your evaluations table has a foreign key into a library-owned table**
    (`appointment_id → appointments.id`), which is what makes migration
    ordering three-phase. See [migrations.md](migrations.md).
 
 `get_appointment_for_service_from_user_by_path` is documented in its own
 source as a temporary shim that assumes one appointment per (service, user) —
-which stopped being true when appointments got a surrogate key. It moved
-across because deleting it would break the host, not because it is good.
+which stopped being true when appointments got a surrogate key. It is kept
+because deleting it would break such hosts, not because it is good.

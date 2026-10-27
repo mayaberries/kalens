@@ -142,7 +142,7 @@ class TestCreateAppointment:
     ) -> None:
         """Deliberate product behaviour, not a defect: overlap is only checked
         against *confirmed* appointments, so two people may both request the
-        same slot and confirming one resolves it. Pinned here so extraction
+        same slot and confirming one resolves it. Pinned here so a refactor
         can't quietly 'fix' it."""
         url = app.url_path_for("appointments:create-appointment", service_id=service_a.id)
         slot = unique_future_time()

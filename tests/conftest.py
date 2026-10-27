@@ -126,10 +126,8 @@ def unique_future_time() -> datetime:
     """A start_time far enough out, and randomly enough placed, that two tests
     booking against the same provider don't collide.
 
-    pets-appts carries the same helper for the same reason: its test database
-    isn't reset between tests, so appointment fixtures in one test can conflict
-    with another's. This suite recreates the schema per session rather than per
-    test, so it inherits the problem and the same mitigation. Per-test
-    transaction rollback is the real fix, in both places.
+    This suite recreates the schema per session rather than per test, so
+    appointment fixtures in one test can conflict with another's. Per-test
+    transaction rollback is the real fix.
     """
     return datetime.now(timezone.utc) + timedelta(days=randint(2, 4000), minutes=randint(0, 59))

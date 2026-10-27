@@ -1,9 +1,9 @@
 """
-kalens -- the scheduling engine extracted from pets-appts.
+kalens -- a scheduling engine for FastAPI applications.
 
 Appointments, weekly availability, and the public booking widget surface,
-lifted out verbatim so more than one application can run the same engine
-instead of forking it. It owns two tables (`appointments`,
+packaged so any number of applications can run the same engine instead of
+each carrying its own. It owns two tables (`appointments`,
 `clinic_availability`) and nothing else; users, services, tenants and the
 subject of a booking stay with the host and arrive through
 `AppointmentsIntegration`.
@@ -30,7 +30,8 @@ USAGE
         tags=["clinic-availability"],
     )
 
-Those prefixes are the host's to choose, and are what pets-appts mounts today.
+Those prefixes are the host's to choose; the ones above are the ones the
+reference host in tests/_host/ uses.
 The route `name=` values are fixed by this library, because tests and
 templates resolve URLs through `app.url_path_for(...)`.
 

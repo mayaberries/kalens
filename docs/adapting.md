@@ -1,7 +1,8 @@
 # Adapting kalens to your domain
 
-The extraction was verbatim. Nothing was generalised on the way out, so the
-code still reads like a veterinary clinic: the appointment's subject column is
+kalens is meant for any business that books time: clinics, practices, studios,
+shops. Its first binding was a veterinary clinic, and the code still reads like
+one: the appointment's subject column is
 literally `pet_id`, and double-booking is scoped to a `clinic_id`. None of
 that is load-bearing — but knowing *which* parts are vocabulary and which are
 actual assumptions is the difference between a rename and a rewrite.
@@ -28,17 +29,17 @@ page is about telling them apart.
 
 ---
 
-## Tier 1 — pets: the reference implementation
+## Tier 1 — pets: the current binding
 
-This is what ships, and what the reference host in `tests/_host/` reproduces.
+This is what ships today, and what the reference host in `tests/_host/`
+implements.
 
 **Subject.** Every appointment carries a pet. Not "optionally a pet" — the
 column is `NOT NULL`, because a veterinary booking without an animal is
 meaningless. Ownership is indirect: a pet belongs to an *owner profile*, not
 to a user, which is what lets a guest with no account still have pets. The
 `RESTRICT` delete rule blocks deleting a pet that has appointment history;
-`b94eca323053` carries a TODO wondering whether soft delete would have been
-better, and that question is still open.
+whether soft delete would have been better is still an open question.
 
 **Provider scope.** A clinic is the unit that can't be double-booked. Confirming
 checks for overlapping *confirmed* appointments across **all** of that
@@ -63,9 +64,6 @@ are pinned by tests here, and both should be revisited before real traffic.
 
 ## Tier 2 — humans: health appointments
 
-Most of this has already been done once, in the `human-appts` fork. Treat that
-repo as the worked example rather than starting from this page.
-
 ### The rename, which is the easy part
 
 `pet_id` → `patient_profile_id`, throughout: the column, the FK target
@@ -82,7 +80,7 @@ that it can't be deleted while history exists — is true of patients too.
 
 **A clinician on the appointment.** In pets, an appointment names the client,
 the pet and the service, but *nobody on the clinic side*. "Connect the patient
-and the doctor" cannot be expressed. `human-appts` adds a nullable
+and the doctor" cannot be expressed. A health binding needs a nullable
 `assigned_staff_user_id`:
 
 - `ON DELETE SET NULL`, matching the reasoning already used for
@@ -100,26 +98,16 @@ and the doctor" cannot be expressed. `human-appts` adds a nullable
 
 **A deliberately narrowed disclosure.** `AppointmentPublic` is readable by the
 booking client, so hydrating the clinician with a full `UserPublic` would hand
-patients their doctor's email, clinic id and profile. `human-appts` adds a
+patients their doctor's email, clinic id and profile. Add a
 purpose-built `AssignedStaffPublic` carrying only `id` and `username`, with a
 test asserting the email does not ride along. **This is the pattern to copy
 whenever you widen a response model in a health context**, and it generalises:
 this library's injected `appointment_public_model` is exactly where you'd
 enforce it.
 
-**Telehealth.** Rooms key on `appointment.id` directly — the surrogate UUID PK
-is globally unique, so a room does not need to nest under `service_id`. The
-signalling server is a relay only and never touches media.
-
-### Merge debt, in both directions
-
-The fork is older than this extraction in some places and newer in others.
-`human-appts` does **not** have `cancellation_reason`, `cancelled_by`, or
-`resolve_cancellation_status` — so it has no `declined` distinction and no
-record of who cancelled or why. Those come from this library. Going the other
-way, `assigned_staff_user_id` and calls exist only in the fork. Adopting
-`kalens` in `human-appts` means taking the cancellation work and
-re-applying the staff-assignment work on top.
+**Telehealth.** Key rooms on `appointment.id` directly — the surrogate UUID PK
+is globally unique, so a room does not need to nest under `service_id`. Keep
+the signalling server a relay only, never touching media.
 
 ### What this library does not give you for health
 
@@ -131,11 +119,11 @@ Named plainly, because "it's for health care" is not a property of the code:
 - **No encryption at rest** beyond whatever Postgres is configured with, and
   no field-level encryption for anything.
 - **`pk_test_` keys write real data.** The `live`/`test` distinction on
-  publishable keys is currently cosmetic; both hit the same tables. The
-  `TODO(env-scoping)` in pets-appts' `public_auth.py` says so. Do not hand a
+  publishable keys (a host concern, resolved by `get_clinic_from_public_key`)
+  is cosmetic unless the host scopes them; both hit the same tables. Do not hand a
   test key to a third party expecting a sandbox.
 - **No notifications of any kind.** No email, push, webhook or queue anywhere
-  in the extracted code. A cancelled consultation tells nobody.
+  in the library. A cancelled consultation tells nobody.
 - **Rate-limit storage is in-process** unless `redis_url` is set — fine for
   one worker, wrong for several, and the availability write limiter is keyed
   on the path's `clinic_id` rather than the authenticated caller (its own TODO
@@ -191,7 +179,7 @@ failure is silent: no error, just a spa that can serve one client at a time.
 The fix is to make the scoping key a parameter of the integration rather than
 a column name — "the id of the thing that can only be in one place at once."
 For a clinic that's the clinic. For a spa it's the therapist or the room. For
-a hair salon it's the chair. Note that `human-appts`' `assigned_staff_user_id`
+a hair salon it's the chair. Note that the health tier's `assigned_staff_user_id`
 is already *most* of the mechanism: once appointments name a practitioner,
 scoping overlap to that practitioner is a small change to one query — and it
 would fix pets too, where a clinic with two vets has the same over-blocking
@@ -208,7 +196,7 @@ which nothing here models — `end_time` is `start_time + duration`, full stop.
 - **Evaluations as the completion trigger.** Leaving a review is currently the
   only thing that marks an appointment `completed`. A spa that doesn't collect
   reviews has appointments that stay `confirmed` forever, years past their
-  end time. This is a known gap in pets-appts too.
+  end time.
 - **`RESTRICT` on subject deletion.** A business that deletes customer records
   on request — which, in several jurisdictions, is not optional — will find
   those deletes blocked by appointment history.
@@ -226,8 +214,8 @@ Ranked by how much it unblocks, not by effort:
    isn't.
 2. **Parameterise the overlap scoping key.** Currently silently wrong for any
    tenant with more than one practitioner or room — which includes most
-   two-vet clinics, not just spas. `human-appts`' `assigned_staff_user_id` is
-   the natural key.
+   two-vet clinics, not just spas. `assigned_staff_user_id` (see the health
+   tier) is the natural key.
 3. **Give completion its own trigger.** Decouple it from evaluations so an
    appointment can complete because its `end_time` passed, not because someone
    left a review.
@@ -240,6 +228,6 @@ Ranked by how much it unblocks, not by effort:
    nothing today depends on it, and the most interesting because it's the
    feature everyone assumes already exists.
 
-Items 1 and 2 are the ones that make this a general scheduling engine. Until
-then it is pets-appts' scheduler with the imports moved — which is exactly what it
-was asked to be, and worth being clear-eyed about.
+Items 1 and 2 are the ones that make kalens a general scheduling engine rather
+than a clinic scheduler with a generic name — worth being clear-eyed about
+until they land.

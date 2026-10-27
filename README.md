@@ -1,9 +1,12 @@
 # kalens
 
-The scheduling engine from [`pets-appts`](../pets-appts), extracted verbatim so
-more than one application can run it instead of forking it.
+A scheduling engine for FastAPI applications. Any business that books time —
+a clinic, a practice, a studio, a shop — can mount it instead of building its
+own appointments, opening hours and public booking flow.
 
-It owns **two tables** — `appointments` and `clinic_availability` — and three
+## Scope
+
+kalens owns **two tables** — `appointments` and `clinic_availability` — and three
 API surfaces:
 
 | Surface | Auth | Routes |
@@ -15,6 +18,14 @@ API surfaces:
 Everything else — users, services, tenants, and the *subject* of a booking (a
 pet, a patient, a garment) — stays with the host and arrives through
 `AppointmentsIntegration`.
+
+**Not in scope**, by design: authentication, user accounts, tenants and their
+services, the subjects being booked, and payments. Those are the host's.
+
+**Not in scope yet**, and worth knowing before you adopt it: notifications or
+lifecycle events, an audit log, turning weekly hours plus bookings into open
+slots, and double-booking per practitioner or room rather than per tenant.
+[docs/adapting.md](docs/adapting.md) ranks them.
 
 ## Install
 
@@ -69,8 +80,8 @@ class PublicAppointmentCreate(kalens.PublicAppointmentCreate):
     pet: PublicPetInput
 ```
 
-That is what keeps the emitted OpenAPI schema identical to the host's own,
-pre-extraction one. Full contract in
+That is what makes the emitted OpenAPI schema name your real types instead of
+`Any`. Full contract in
 [docs/integration-contract.md](docs/integration-contract.md).
 
 ## Migrate
@@ -88,20 +99,39 @@ Host tables must exist first — the foreign keys are the enforcement. See
 
 ## Make it yours
 
-The extraction is verbatim, which means the code is still shaped like a
-veterinary clinic: the appointment's subject column is literally `pet_id`, and
+kalens was first bound to a veterinary clinic, and the code is still shaped
+like one: the appointment's subject column is literally `pet_id`, and
 double-booking is scoped to a clinic. Nothing about that is load-bearing, and
-[docs/adapting.md](docs/adapting.md) is the map — what pets binds each seam to,
-what changes for human health appointments, and what a tailor or a spa would
+[docs/adapting.md](docs/adapting.md) is the map — what each seam is bound to
+today, what changes for health appointments, and what a tailor or a spa would
 have to change on top of that.
 
-## Test
+## Develop
 
 ```bash
-make test          # needs Postgres; see the Makefile for the URL it expects
+git clone git@github.com:mayaberries/kalens.git
+cd kalens
+make install       # .venv with the package editable, plus test extras (Python >= 3.13)
+make db-up         # Postgres in its own container, kalens-db, on port 5433
+make test          # the suite
+make verify        # syntax check + suite
 ```
 
-The suite runs against a **reference host** in `tests/_host/` — a minimal
+`make help` lists every target. To run one test:
+
+```bash
+.venv/bin/pytest tests/appointments/test_cancel.py -k client_cancels_a_confirmed -v
+```
+
+**The suite drops and recreates its database on every run.** That's why it
+has its own container on 5433 rather than the default 5432, where an
+application database is likely to be. Point `KALENS_DATABASE_URL` anywhere
+else only if you mean it.
+
+`.venv` stores absolute paths, so if you move or rename the checkout, rebuild
+it: `rm -rf .venv && make install`.
+
+The suite runs against a **reference host** in `tests/_host/`, a minimal
 FastAPI app that implements the contract with throwaway `users` / `services` /
 `pet_profiles` / `clinics` tables. That app existing at all is the proof the
 library stands on its own.

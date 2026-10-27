@@ -1,9 +1,9 @@
 """
-Repository injection, vendored from pets-appts `app/api/dependencies/database.py`.
+Repository injection.
 
-Identical except that the attribute the connection pool lives under is read
-from Settings instead of being hardcoded to `_db` -- a host that names it
-something else shouldn't have to rename to adopt this library.
+The attribute the connection pool lives under is read from Settings rather
+than hardcoded to `_db` -- a host that names it something else shouldn't have
+to rename to adopt this library.
 
 This library never opens or closes the connection. The host's own lifespan
 does that; all that happens here is reading the pool back off `app.state`.

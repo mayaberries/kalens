@@ -1,14 +1,9 @@
 """create appointment tables
 
-The tables this library owns, in their final shape. This is a squash of five
-pets-appts revisions -- the `create_appointments_table` half of
-`b732937fb214`, then `a1f3c9d8e2b4` (surrogate id + scheduling columns),
-`b94eca323053` (pet_id), `38488164cd7a` (cancellation), and `a26a66e8e83f`
-(clinic_availability). The intermediate states are not reproducible from a
-library that was never installed while they existed, so they are not
-preserved; what is preserved exactly is the end state, down to constraint and
-index names, because those are what a schema diff against a host database
-compares.
+The tables this library owns. Constraint and index names are fixed
+deliberately: a host adopting the library over tables it already has stamps
+this revision instead of running it (docs/migrations.md), and that is only
+safe if the names match exactly.
 
 PREREQUISITE TABLES -- the host must have migrated first
     users(id CHAR(36) PK)
@@ -40,9 +35,8 @@ depends_on = None
 
 
 def create_updated_at_trigger() -> None:
-    """CREATE OR REPLACE, not CREATE: pets-appts already defines this exact
-    function in its own first revision and every timestamped table in the host
-    depends on it. Replacing it with an identical body is a no-op there, and
+    """CREATE OR REPLACE, not CREATE: a host very likely already defines this
+    exact function and its own timestamped tables depend on it. Replacing it with an identical body is a no-op there, and
     creates it for a greenfield host that has no such function yet. Dropping
     it on downgrade would break the host's tables, so downgrade() leaves it."""
     op.execute(

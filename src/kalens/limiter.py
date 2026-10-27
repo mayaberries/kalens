@@ -1,11 +1,9 @@
 """
 Rate limiting for the public booking surface and the availability endpoints.
 
-Copied from pets-appts `app/core/limiter.py`. The only structural change is
-that the storage, strategy and parsed limits are built lazily on first use
-instead of at import time -- the host's values arrive with `configure()`, which
-necessarily runs after this module is imported. Everything downstream of
-`_state()` is the original code, comments included.
+The storage, strategy and parsed limits are built lazily on first use rather
+than at import time -- the host's values arrive with `configure()`, which
+necessarily runs after this module is imported.
 """
 from dataclasses import dataclass
 from typing import Optional

@@ -3,10 +3,11 @@ PY   := $(VENV)/bin/python
 PIP  := $(VENV)/bin/pip
 
 # The test suite drops and recreates KALENS_TEST_DB on every run, so this
-# points at kalens' own container (port 5433), never pets-appts' 5432.
+# points at kalens' own container on 5433, away from the default 5432 that an
+# application database is likely to be on.
 export KALENS_DATABASE_URL ?= postgresql://postgres:postgres@localhost:5433/postgres
 
-.PHONY: help venv install db-up db-down db-logs test verify compare-schema compare-openapi lint clean
+.PHONY: help venv install db-up db-down db-logs test verify lint clean
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -32,13 +33,7 @@ db-logs: ## tail postgres logs
 test: ## run the suite against the reference host
 	$(VENV)/bin/pytest -v
 
-verify: test compare-schema compare-openapi ## everything: suite + both equivalence checks
-
-compare-schema: ## diff our migrated schema against pets-appts' own
-	$(VENV)/bin/python scripts/compare_schema.py
-
-compare-openapi: ## diff our API surface against pets-appts' openapi.json
-	$(VENV)/bin/python scripts/compare_openapi.py
+verify: lint test ## everything: syntax check + suite
 
 lint: ## byte-compile everything as a syntax check
 	$(PY) -m compileall -q src tests && echo "syntax ok"

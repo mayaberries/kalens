@@ -5,16 +5,16 @@ build-backend = "hatchling.build"
 [project]
 name = "kalens"
 version = "0.1.0"
-description = "The scheduling engine extracted verbatim from pets-appts: appointments, clinic availability, and public booking."
+description = "A scheduling engine for FastAPI applications: appointments, weekly availability, and public booking."
 readme = "README.md"
 requires-python = ">=3.13"
 license = { text = "MIT" }
 authors = [{ name = "Maya Morales", email = "aka.mayberries@proton.me" }]
 
-# Pinned to match pets-appts/backend/requirements.txt exactly. Installing this
-# library must never move a host application's own versions -- an extracted
-# component that silently upgrades FastAPI underneath its host is not a
-# drop-in replacement for the code it replaced.
+# Pinned exactly: these are the versions the suite runs against, and a
+# library that silently upgrades FastAPI underneath its host is not a drop-in
+# component. A host must be on the same versions. Move them deliberately, with
+# the suite green, never as a side effect of another change.
 dependencies = [
     "fastapi==0.141.1",
     "pydantic==2.13.4",

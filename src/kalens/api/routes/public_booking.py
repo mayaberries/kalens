@@ -1,11 +1,10 @@
 """
-The unauthenticated booking widget surface, from pets-appts
-`app/api/routes/appointments/public_booking.py`.
+The unauthenticated booking widget surface.
 
 This is the most host-coupled module in the library, and deliberately so: the
 flow is guest-user provisioning, owner-to-tenant linking, subject lookup or
 creation, and only then an appointment. Four of those five steps belong to the
-host. It moves here because it is the *other* way an appointment gets created,
+host. It lives here because it is the *other* way an appointment gets created,
 and splitting the two creation paths across a library boundary would be worse
 than carrying the dependencies.
 """

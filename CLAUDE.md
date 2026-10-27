@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-`kalens` is the scheduling engine from the sibling repo `../pets-appts`, **extracted verbatim**: appointments, weekly clinic availability, and the public booking surface. It's a FastAPI library, not an app. It owns two tables (`appointments` and `clinic_availability`). Everything else (users, services, clinics/tenants, and the booking's *subject*, today a pet) belongs to the host. The host supplies those through `AppointmentsIntegration`. It ships as a pip package pinned to a git tag (`@v0.1.0`), not via PyPI.
+`kalens` is a standalone scheduling engine for FastAPI applications: appointments, weekly availability, and the public booking surface. It's a library, not an app, and it must not depend on or name any particular host application. The README's Scope section says what is in and out. It owns two tables (`appointments` and `clinic_availability`). Everything else (users, services, clinics/tenants, and the booking's *subject*, today a pet) belongs to the host. The host supplies those through `AppointmentsIntegration`. It ships as a pip package pinned to a git tag (`@v0.1.0`), not via PyPI.
 
-"Verbatim" is a design constraint, not an accident. The code still says `pet_id`, `clinic_id` and `get_pet_by_id` on purpose. Don't generalise names or behaviour in passing. `docs/adapting.md` lists the planned generalisations and their order, and none of them have been made. Function bodies and comments copied from pets-appts should stay as they are. Only imports and annotations were changed.
+Its first binding was a veterinary clinic, so the code still says `pet_id`, `clinic_id` and `get_pet_by_id`. Don't generalise names or behaviour in passing. `docs/adapting.md` lists the planned generalisations and their order, and none of them have been made yet. Each one is a breaking change to the contract or schema and gets its own change.
 
 ## Commands
 
@@ -15,15 +15,14 @@ make install          # .venv + editable install with [test] extras (Python >= 3
 make db-up            # Postgres 13 in its own container on port 5433
 make test             # pytest -v against the reference host
 make lint             # compileall syntax check; there is no ruff/mypy
-make verify           # test + compare-schema + compare-openapi
+make verify           # lint + test
 make db-down          # stop and drop the volume
 
 .venv/bin/pytest tests/appointments/test_cancel.py::test_name -v   # single test
 ```
 
-- Tests use **port 5433, never 5432** (that's pets-appts' DB). Each session runs `DROP DATABASE ... WITH (FORCE)` on `KALENS_TEST_DB` (default `kalens_test`). Set the server with `KALENS_DATABASE_URL`.
-- `compare-schema` and `compare-openapi` read `../pets-appts` and only read it. You can override the paths with `PETS_APPTS_BACKEND` and `PETS_APPTS_OPENAPI`. `compare-schema` runs pets-appts' Alembic chain on a throwaway DB and diffs columns, constraints, indexes, triggers and FK delete rules against this library's chain. `compare-openapi` diffs paths, methods, operation ids and status codes, but not response bodies.
-- Dependency versions in `pyproject.toml` are pinned to exactly match `pets-appts/backend/requirements.txt`. Installing the library must never change the host's versions, so don't bump them on their own.
+- Tests use **port 5433, never 5432** (the default, where an application DB is likely to be). Each session runs `DROP DATABASE ... WITH (FORCE)` on `KALENS_TEST_DB` (default `kalens_test`). Set the server with `KALENS_DATABASE_URL`.
+- Dependency versions in `pyproject.toml` are pinned exactly, and hosts must match them. Move them deliberately with the suite green, never as a side effect of another change.
 
 ## Architecture
 
@@ -40,7 +39,7 @@ make db-down          # stop and drop the volume
 
 ### Injected models keep the OpenAPI schema the same
 
-The library declares `AppointmentPublic.user/pet/service` loosely. The host passes a subclass that narrows them back to concrete types and is used as `response_model`. As a result, the emitted schema matches pets-appts' pre-extraction one. `coerce()` rebuilds host objects as the host's public model so InDB-only fields don't leak into responses. Route `name=` values are fixed because hosts build URLs with `app.url_path_for("appointments:create-appointment", ...)`. Route prefixes are chosen by the host.
+The library declares `AppointmentPublic.user/pet/service` loosely. The host passes a subclass that narrows them back to concrete types and is used as `response_model`. As a result, the emitted schema names the host's real types instead of `Any`. `coerce()` rebuilds host objects as the host's public model so InDB-only fields don't leak into responses. Route `name=` values are fixed because hosts build URLs with `app.url_path_for("appointments:create-appointment", ...)`. Route prefixes are chosen by the host.
 
 ### Data access
 
@@ -48,7 +47,7 @@ There's no ORM. Repositories run raw SQL through `databases`. Every appointment 
 
 ### Migrations
 
-The library has its own Alembic chain in `src/kalens/migrations/` with its own version table, `kalens_alembic_version`. Hosts run `alembic -n kalens ...` as a separate step after their own migrations. FKs to the host tables are how the contract is enforced. The `migrations` directory is force-included in the wheel because Alembic finds it by filesystem path. There's no `target_metadata`, so `--autogenerate` doesn't work and revisions are written by hand with `op`. `0001` squashes five pets-appts revisions, which `docs/migrations.md` maps. Downgrade deliberately leaves `update_updated_at_column()` in place.
+The library has its own Alembic chain in `src/kalens/migrations/` with its own version table, `kalens_alembic_version`. Hosts run `alembic -n kalens ...` as a separate step after their own migrations. FKs to the host tables are how the contract is enforced. The `migrations` directory has to ship inside the wheel because Alembic finds it by filesystem path. It lives under `src/kalens`, so `packages` already includes it; don't also force-include it, or every file lands in the wheel twice and hatchling rejects it. There's no `target_metadata`, so `--autogenerate` doesn't work and revisions are written by hand with `op`. Constraint and index names in `0001` are fixed so that a host with existing tables can `stamp head` instead of upgrading. Downgrade deliberately leaves `update_updated_at_column()` in place.
 
 ### Tests
 
@@ -56,7 +55,7 @@ The library has its own Alembic chain in `src/kalens/migrations/` with its own v
 
 ## Behaviour that looks like a bug but isn't
 
-These are pinned by tests and inherited on purpose (see `docs/adapting.md`):
+These are pinned by tests and intentional (see `docs/adapting.md`):
 
 - Overlap is checked only against `confirmed` appointments. Two `requested` appointments for the same slot can both succeed, and confirming one doesn't decline the other.
 - A booking-authority mismatch returns **404, not 403**, so callers can't probe which subject ids exist.
@@ -65,8 +64,8 @@ These are pinned by tests and inherited on purpose (see `docs/adapting.md`):
 
 ## Conventions
 
-Module and function docstrings explain *why*, often under capitalised headings (`WHY THESE ARE BUILT BY A FACTORY`), and they matter for understanding the code. Keep them when refactoring and match their style. Settings defaults must reproduce pets-appts' behaviour exactly.
+Module and function docstrings explain *why*, often under capitalised headings (`WHY THESE ARE BUILT BY A FACTORY`), and they matter for understanding the code. Keep them when refactoring and match their style. Changing a Settings default changes behaviour for every host that doesn't pass one, so treat it as a breaking change.
 
 ## Git identity
 
-The project author is `Maya Morales <aka.mayberries@proton.me>` (see `pyproject.toml`). Per the parent `../CLAUDE.md`, set git identity with `--local` only and never `--global`, because the global config is a different, work identity. This repo doesn't have a local identity set yet.
+The project author is `Maya Morales <aka.mayberries@proton.me>` (see `pyproject.toml`). Per the parent `../CLAUDE.md`, set git identity with `--local` only and never `--global`, because the global config is a different, work identity. This repo already has it set locally.

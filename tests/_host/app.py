@@ -3,10 +3,10 @@ The reference host application.
 
 A FastAPI app that implements the integration contract and nothing else. Its
 existence is the actual claim this test suite makes: `kalens` runs against
-an application that has never heard of pets-appts.
+any application that implements the contract, and needs nothing else.
 
-Route prefixes match what pets-appts mounts today, because the ported tests
-resolve URLs by name and assert on paths.
+Route prefixes are fixed here because the tests resolve URLs by name and
+assert on paths.
 """
 from contextlib import asynccontextmanager
 
@@ -73,7 +73,7 @@ def build_app(database_url: str, settings: Settings | None = None) -> tuple[Fast
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         # The host owns the connection; the library only reads it back off
-        # app.state. Mirrors pets-appts' connect_to_db.
+        # app.state.
         database = Database(database_url, min_size=2, max_size=10)
         await database.connect()
         app.state._db = database
