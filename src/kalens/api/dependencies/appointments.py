@@ -1,6 +1,5 @@
 """
-Appointment permission checks and path-param resolution, from pets-appts
-`app/api/dependencies/appointments.py`.
+Appointment permission checks and path-param resolution.
 
 WHY THESE ARE BUILT BY A FACTORY
     Everything else in this library resolves the host through
@@ -10,9 +9,8 @@ WHY THESE ARE BUILT BY A FACTORY
     signatures. So they are defined inside a factory that runs after
     `configure()`, closing over the host's callables.
 
-    The function bodies below are unchanged from the source. Only the
-    annotations moved: `UserInDB` and `ServiceInDB` are the host's models, so
-    they are `Any` here -- FastAPI never validates a `Depends`-supplied
+    The user and service parameters are annotated `Any`: they are the host's
+    models, which this library can't import -- FastAPI never validates a `Depends`-supplied
     parameter against its annotation, so this changes nothing at runtime and
     nothing in the emitted schema.
 """
@@ -77,8 +75,8 @@ def build_appointment_dependencies(
         as a stopgap. Do not build new functionality on top of this; it goes
         away when evaluations move to being keyed by appointment_id (phase 3).
 
-        It survives extraction only because evaluations stayed with the host
-        and still imports it. See docs/integration-contract.md.
+        It exists only for hosts that keep evaluations on their side and
+        still import it. See docs/integration-contract.md.
         """
         appointments = await appointments_repo.list_appointments_for_service_from_user(service=service, user=user)
 

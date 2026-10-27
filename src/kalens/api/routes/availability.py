@@ -1,13 +1,12 @@
 """
-Weekly recurring hours, from pets-appts
-`app/api/routes/clinics/clinic_availability.py`.
+Weekly recurring hours.
 
 GET is unauthenticated on purpose so an embedded widget can pull a tenant's
 hours directly; only the rate limiter stands in front of it. PUT is
 JWT-authed and additionally passes through the host's own
 `check_clinic_modification_permissions`.
 
-Note what this does NOT do, in this version or the one it came from: nothing
+Note what this does NOT do yet: nothing
 here combines these hours with existing bookings to produce a list of open
 slots, and `has_overlapping_confirmed_appointment` never reads this table. The
 two halves of "when can I book" are still independent. See docs/adapting.md.

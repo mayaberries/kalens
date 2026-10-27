@@ -1,6 +1,6 @@
 ---
 name: write-issue
-description: How to write GitHub issues for kalens concisely. Use whenever drafting, opening, or editing an issue for this repo or for pets-appts.
+description: How to write GitHub issues for kalens concisely. Use whenever drafting, opening, or editing an issue for this repo.
 ---
 
 # Writing issues
@@ -34,11 +34,11 @@ For a generalisation from `docs/adapting.md`, name the seam (subject, provider s
    - The bullets are concrete: a file, a name or a case, plus a short clause saying why.
    - Bold the lead-in of a bullet when the list works like a lookup table (marker → when to use it).
 4. **Code examples only when they settle a question the prose can't.** Take them from real code in the repo, trimmed to 3–8 lines with `...`. Never invent an API.
-5. **`## Done when`** is a checklist of verifiable outcomes, one per deliverable. Prefer outcomes a command proves: a named test passes, `make verify` is green, `make compare-schema` still reports identical (or the issue says why it shouldn't).
+5. **`## Done when`** is a checklist of verifiable outcomes, one per deliverable. Prefer outcomes a command proves: a named test passes, `make verify` is green.
 
 ## What a kalens issue must say
 
-- **Whether it breaks verbatim.** The library is copied unchanged from pets-appts. If the change alters copied behaviour or names, say so, and say whether pets-appts needs the same change or will drift on purpose.
+- **Whether it breaks hosts.** kalens is a standalone library. If the change alters the contract, the schema, route names or a Settings default, say so and say what a host must change. Name no particular host application.
 - **Whether it touches the contract.** If yes, list all three places that change together: `integration.py`, `docs/integration-contract.md`, `tests/_host/`.
 - **Whether it needs a migration.** If yes, the new revision goes in `src/kalens/migrations/versions/` and is written by hand (there's no autogenerate). New appointment columns also go in `APPOINTMENT_COLUMNS`.
 - **Whether it changes intended behaviour.** For example: overlap is checked only against confirmed appointments, and some lookups return 404 instead of 403. Changing one of those is a decision, not a bug fix, so the issue has to say so (see `CLAUDE.md`).
@@ -52,5 +52,5 @@ For a generalisation from `docs/adapting.md`, name the seam (subject, provider s
 ## Mechanics
 
 - Write the body to a file in the scratchpad and pass it with `gh issue create --title … --label … --body-file …`. Don't use a heredoc, because it mangles backticks.
-- If the fix belongs in `../pets-appts` (or another upstream repo), open an **issue there, not a PR**: a feature request for them to review first.
+- If the fix belongs in a host application rather than here, open an **issue in that repo, not a PR**: a feature request for them to review first.
 - After opening it, reply with the URL and a few lines on the choices you made. Don't paste the body back.

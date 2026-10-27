@@ -137,8 +137,7 @@ PET_COLUMNS = "id, owner_profile_id, name, species"
 
 
 class PetProfilesRepository(BaseRepository):
-    """The SUBJECT repository. Named for pets because the extraction is
-    verbatim -- see docs/adapting.md."""
+    """The SUBJECT repository. Still named for pets -- see docs/adapting.md."""
 
     async def get_pet_by_id(self, *, id: str) -> Optional[PetProfilePublic]:
         record = await self.db.fetch_one(

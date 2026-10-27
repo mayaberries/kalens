@@ -10,7 +10,13 @@ from fastapi import FastAPI
 from httpx import AsyncClient
 
 from tests._fixtures.entities import auth
-from tests._helpers import appointment_row, confirm_appointment, request_appointment, withdraw_url
+from tests._helpers import (
+    appointment_row,
+    cancel_url,
+    confirm_appointment,
+    request_appointment,
+    withdraw_url,
+)
 
 pytestmark = pytest.mark.asyncio
 
@@ -81,3 +87,26 @@ class TestWithdrawAppointment:
         )
         assert res.status_code == 400
         assert "currently requested" in res.json()["detail"]
+
+    async def test_a_cancelled_appointment_cannot_be_withdrawn(
+        self, app: FastAPI, client: AsyncClient, db, service_a, clinic_a_admin, client_one, client_one_pet
+    ) -> None:
+        """Withdrawal is a hard DELETE, so letting it through here would erase
+        the cancellation -- reason, `cancelled_by` and all."""
+        created = await request_appointment(
+            app, client, service=service_a, booker=client_one, pet=client_one_pet
+        )
+        await confirm_appointment(
+            app, client, service=service_a, staff=clinic_a_admin, appointment_id=created["id"]
+        )
+        cancelled = await client.put(
+            cancel_url(app, service=service_a, appointment_id=created["id"]), headers=auth(client_one)
+        )
+        assert cancelled.status_code == 200
+
+        res = await client.delete(
+            withdraw_url(app, service=service_a, appointment_id=created["id"]), headers=auth(client_one)
+        )
+        assert res.status_code == 400
+        assert "currently requested" in res.json()["detail"]
+        assert (await appointment_row(db, created["id"]))["status"] == "cancelled"

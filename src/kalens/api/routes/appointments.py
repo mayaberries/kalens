@@ -1,10 +1,9 @@
 """
-Appointment path operations, from pets-appts
-`app/api/routes/appointments/appointments.py`.
+Appointment path operations.
 
 Built by a factory for the same reason the dependencies are (see
-`api/dependencies/appointments.py`). Route `name=` values are preserved
-exactly -- the host's tests build every URL with
+`api/dependencies/appointments.py`). Route `name=` values are fixed
+-- the host's tests build every URL with
 `app.url_path_for("appointments:create-appointment", ...)`, so a renamed route
 breaks them loudly, which is the point.
 """
@@ -36,7 +35,7 @@ def build_appointments_router(
     get_service_by_id_from_path = integration.get_service_by_id_from_path
     # The host's subclass, which re-narrows `user` / `pet` / `service` back to
     # concrete models. Declaring it as the response_model is what keeps the
-    # emitted OpenAPI schema identical to the host's pre-extraction one.
+    # emitted OpenAPI schema naming the host's real types.
     AppointmentPublic = integration.appointment_public_model
 
     @router.post(
@@ -128,7 +127,7 @@ def build_appointments_router(
     ):
         withdrawn = await appointments_repo.withdraw_appointment(appointment=appointment)
         # Not populated: the row is gone, so there is nothing left to hydrate
-        # the subject or user from. Same as pre-extraction.
+        # the subject or user from.
         return AppointmentPublic(**withdrawn.model_dump())
 
     return router

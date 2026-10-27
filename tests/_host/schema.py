@@ -2,8 +2,8 @@
 The host tables `kalens` requires but does not own.
 
 This is the prerequisite contract from docs/integration-contract.md, written
-out as the smallest schema that satisfies it. Deliberately *not* a copy of
-pets-appts' tables: only the columns the library's foreign keys and its
+out as the smallest schema that satisfies it. Deliberately *not* a realistic
+application schema: only the columns the library's foreign keys and its
 injected repositories actually touch are here. If the library ever starts
 needing a column that isn't in this file, the contract grew and the docs are
 out of date -- which is most of the point of keeping this minimal.

@@ -1,12 +1,8 @@
 """
 The seam between this library and its host application.
 
-This is the only genuinely new code in `kalens`. Everything else is the
-pets-appts scheduling engine copied across with its imports repointed at this
-module.
-
 WHY A CONTRACT AND NOT A BASE CLASS
-    The extracted code does not own users, services, clinics, or the *subject*
+    The library does not own users, services, clinics, or the *subject*
     of an appointment (a pet, today). It reads all four, joins to two of them
     in SQL, and returns two of them inside its response bodies. Those are the
     host's tables and the host's models. Rather than pretend otherwise with
@@ -14,13 +10,13 @@ WHY A CONTRACT AND NOT A BASE CLASS
     the concrete pieces once and this library uses them directly.
 
 WHY THE MODELS ARE INJECTED TOO
-    `AppointmentPublic.pet` is typed `PetProfilePublic` in pets-appts. A
-    library that hardcoded that type would only work for pets; one that typed
-    it `Any` would change the generated OpenAPI schema, and the schema is the
+    `AppointmentPublic.pet` is the host's subject, e.g. a `PetProfilePublic`.
+    A library that hardcoded that type would only work for one domain; one
+    that typed it `Any` would degrade the generated OpenAPI schema, and the schema is the
     contract the host's own tests and frontends are written against. So the
     library declares the hydrated fields loosely and the host passes down a
-    subclass that re-narrows them. The emitted schema is then identical to the
-    one pets-appts produces today.
+    subclass that re-narrows them. The emitted schema then names the host's
+    real types.
 
     See docs/integration-contract.md for the full method-by-method contract,
     and docs/adapting.md for what each of these seams *means* -- which is what
@@ -48,12 +44,12 @@ class AppointmentsIntegration:
     # and a `.profiles_repo` exposing get_profile_by_user_id(user_id).
     users_repository: type
 
-    # The SUBJECT of an appointment -- `PetProfilesRepository` in pets-appts.
+    # The SUBJECT of an appointment -- e.g. a `PetProfilesRepository`.
     # get_pet_by_id(id), get_pet_by_id_for_clinic(id, clinic_id),
     # create_pet(new_pet, owner_profile_id),
     # list_pet_profiles_for_clinic(clinic_id, owner_profile_id).
-    # The method names are pets-shaped because the extraction is verbatim;
-    # docs/adapting.md covers renaming them.
+    # The method names are still pet-shaped; docs/adapting.md covers
+    # generalising them.
     subject_repository: type
 
     # get_service_by_id_for_clinic(id, clinic_id),

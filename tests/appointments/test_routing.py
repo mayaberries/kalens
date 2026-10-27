@@ -1,5 +1,5 @@
 """
-Routes exist, are named, and resolve to the paths pets-appts serves today.
+Routes exist, are named, and resolve to the paths the reference host mounts.
 
 The `name=` values are load-bearing: hosts and their tests build URLs with
 `app.url_path_for(...)`, so renaming one is a breaking change to this

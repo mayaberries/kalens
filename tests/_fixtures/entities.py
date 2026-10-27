@@ -4,10 +4,9 @@ appointment needs before it can exist.
 
 That this file is as long as it is *is* a finding, not an accident. There is
 no such thing as a cheap appointment fixture: a clinic, an admin, a client, an
-owner profile, a subject and a service all have to exist first. The same
-observation holds in pets-appts, and it is what makes appointments hard to
-test in isolation there. Extracting the library doesn't fix it -- the graph is
-in the domain, not the packaging.
+owner profile, a subject and a service all have to exist first. Packaging
+the engine as a library doesn't change that -- the graph is in the domain, not
+the packaging.
 """
 from uuid import uuid4
 
@@ -28,8 +27,7 @@ from tests._host.models import PetProfileCreate
 @pytest.fixture(autouse=True)
 def reset_rate_limits():
     """The limiter's storage is process-global, so a test that exhausts a
-    bucket would otherwise 429 every test after it. pets-appts carries the
-    identical autouse fixture for the identical reason."""
+    bucket would otherwise 429 every test after it."""
     kalens.reset_public_rate_limits()
     yield
     kalens.reset_public_rate_limits()
