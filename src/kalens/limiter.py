@@ -136,10 +136,12 @@ def enforce_clinic_availability_read_rate_limits(request: Request, clinic_id: st
 
 # TODO(rate-limit): the write-side limiter is keyed on clinic_id (from the
 # path), not on the authenticated caller -- so an unauthenticated request
-# with a guessed/known clinic_id still consumes write budget even though
-# check_clinic_modification_permissions will 403 it right after. A flood of
+# (401) or another clinic's user (403) with a guessed/known clinic_id still
+# consumes write budget, because this runs before
+# check_clinic_modification_permissions rejects it. A flood of
 # such requests could still exhaust the real admin's write budget before
-# the 403 ever gets checked. Fix: key this limiter on current_user.id
+# the permission check ever runs (pinned by tests/availability/
+# test_rate_limiting.py, which a fix should flip). Fix: key this limiter on current_user.id
 # instead, since PUT is JWT-authed anyway -- add
 # current_user = Depends(integration.get_current_active_user) to this
 # function's signature and hit the bucket with current_user.id.

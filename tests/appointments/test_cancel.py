@@ -156,3 +156,34 @@ class TestCancelAppointment:
             app, client, service=service_a, booker=client_two, pet=client_two_pet, start_time=slot
         )
         assert retry["status"] == "requested"
+
+    async def test_cancelling_one_appointment_leaves_the_others_alone(
+        self, app: FastAPI, client: AsyncClient, db, service_a, clinic_a_admin,
+        client_one, client_one_pet, client_two, client_two_pet
+    ) -> None:
+        """The cancel UPDATE is scoped to one row. The others on the same
+        service -- confirmed or still requested -- keep their status, the
+        same isolation `test_confirming_does_not_auto_decline_the_others`
+        checks for confirm."""
+        mine = await request_appointment(
+            app, client, service=service_a, booker=client_one, pet=client_one_pet
+        )
+        their_confirmed = await request_appointment(
+            app, client, service=service_a, booker=client_two, pet=client_two_pet
+        )
+        their_requested = await request_appointment(
+            app, client, service=service_a, booker=client_two, pet=client_two_pet
+        )
+        for appointment in (mine, their_confirmed):
+            await confirm_appointment(
+                app, client, service=service_a, staff=clinic_a_admin, appointment_id=appointment["id"]
+            )
+
+        res = await client.put(
+            cancel_url(app, service=service_a, appointment_id=mine["id"]), headers=auth(client_one)
+        )
+        assert res.status_code == 200
+
+        assert (await appointment_row(db, mine["id"]))["status"] == "cancelled"
+        assert (await appointment_row(db, their_confirmed["id"]))["status"] == "confirmed"
+        assert (await appointment_row(db, their_requested["id"]))["status"] == "requested"
