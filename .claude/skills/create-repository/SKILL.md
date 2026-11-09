@@ -245,7 +245,7 @@ class XsService:
 - [ ] Constraint violations caught and re-raised as named domain errors.
 - [ ] Multi-table writes are in a service, inside one transaction.
 - [ ] Domain errors are mapped in the handler; the handler is registered.
-- [ ] OpenAPI regenerated if routes changed (Vetted: `make openapi`; Sinapsis: `make gen-api`; Kalens: `make compare-openapi` against its host).
+- [ ] OpenAPI regenerated if routes changed (Vetted: `make openapi`; Sinapsis: `make gen-api`; Kalens: `make compare-openapi` against its host, pending kalens#9).
 
 ## Where things go in each repo
 

@@ -247,5 +247,5 @@ convention where it has one (Sinapsis, Xolo: `XXX-NNN`).
 |---|---|---|---|
 | **pets-appts (Vetted)** | `backend/app/models/<domain>/<entity>.py` | `backend/app/models/core.py` *(add `InputModel`, aware timestamps)* | `make openapi` |
 | **Sinapsis** | `backend/app/modules/<domain>/schemas.py` | `backend/app/shared/schemas.py` *(the reference; add `InputModel`)* | `make gen-api` |
-| **Kalens** | `src/kalens/models/<entity>.py` | `src/kalens/models/core.py` | `make compare-openapi` against its host |
+| **Kalens** | `src/kalens/models/<entity>.py` | `src/kalens/models/core.py` | `make compare-openapi` against its host *(pending kalens#9)* |
 | **Xolo** | `src/xolo/models/<entity>.py` | `src/xolo/models/core.py` | as Kalens |

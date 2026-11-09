@@ -225,7 +225,7 @@ it, along with the error hierarchy and handler if those are missing too (see
   `configure()` calls; the host picks the prefix. Add the router to the module
   the factory returns and to the reference host's mounting.
 - Regenerate the API schema: Vetted `make openapi`, Sinapsis `make gen-api`,
-  Kalens `make compare-openapi` against its host. Generated, never hand-edited.
+  Kalens `make compare-openapi` against its host (pending kalens#9). Generated, never hand-edited.
 
 ## 7. Test it
 
