@@ -192,7 +192,8 @@ Against the reference host:
   also clear anything cached from the previous one, as it does for the rate
   limiter's limits);
 - the equivalence checks still pass where they apply (`make compare-schema`,
-  `make compare-openapi` against a host checkout).
+  `make compare-openapi` against a host checkout; both pending kalens#9, see
+  `create-migration` step 9 for the interim manual check).
 
 ## 7. Wire it (host side)
 
@@ -237,7 +238,9 @@ Everywhere else:
       - *Greenfield:* upgrade in the documented phase order.
       - *Adopting a database that already has the tables* (Vetted with
         Kalens, Vetted with Xolo): **stamp**, never upgrade, after checking
-        with `compare-schema` that the tables match the library's revision.
+        with `compare-schema` that the tables match the library's revision
+        (pending kalens#9; until then the manual `pg_dump` diff in
+        `create-migration` step 9).
         From then on, mirror each library revision in the host's chain and
         re-stamp (Vetted's `docs/architecture.md`, "Migrations").
 - [ ] **Run the equivalence checks** when the library was extracted from this
