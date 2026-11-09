@@ -13,7 +13,13 @@ from contextlib import asynccontextmanager
 from databases import Database
 from fastapi import APIRouter, FastAPI
 
-from kalens import AppointmentsIntegration, AppointmentsModule, Settings, configure
+from kalens import (
+    AppointmentsIntegration,
+    AppointmentsModule,
+    Settings,
+    configure,
+    register_error_handlers,
+)
 from tests._host import dependencies as host_deps
 from tests._host.models import (
     AppointmentPublic,
@@ -81,5 +87,7 @@ def build_app(database_url: str, settings: Settings | None = None) -> tuple[Fast
         await database.disconnect()
 
     app = FastAPI(title="kalens reference host", lifespan=lifespan)
+    # A host step in the contract (docs/integration-contract.md).
+    register_error_handlers(app)
     app.include_router(api, prefix="/api")
     return app, appts
