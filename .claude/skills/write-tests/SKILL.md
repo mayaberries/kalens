@@ -63,11 +63,10 @@ shared rows between tests, no live server.
   `scope="session"` or `"module"` that writes rows is a leak.
 - **Don't assert on global counts** ("there are 3 clinics") unless the test
   created all of them; assert on the rows it created, by id.
-- Vetted's `docs/testing.md` and CLAUDE.md say its test DB isn't reset between
-  tests, but its `connect_to_db` has passed `force_rollback` since `3e9d4df`
-  (2026-08-04), before that note was written. Until someone confirms which is
-  true by running the suite, new tests there still use unique values (step 3)
-  so they pass either way.
+- Vetted's test DB is rolled back after each test (`force_rollback`, confirmed
+  in its `docs/testing.md`). New tests still use unique values (step 3): it
+  keeps them independent of order and ready for `committing_db`, which doesn't
+  roll back.
 
 ## 3. Fixtures: factories, not singletons
 
