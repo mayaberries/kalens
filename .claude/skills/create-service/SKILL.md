@@ -254,8 +254,7 @@ real test database; don't mock repositories.
   missing one.
 
 Route tests (`create-route`) then only check the HTTP mapping. Follow the
-repo's test-ID convention where it has one (Sinapsis, Xolo: `XXX-NNN`). Vetted's
-backend test DB isn't reset between tests (`docs/testing.md`).
+repo's test-ID convention where it has one (Sinapsis, Xolo: `XXX-NNN`).
 
 ## 8. Checklist
 
