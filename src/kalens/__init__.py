@@ -57,6 +57,17 @@ from kalens.db.appointments import AppointmentsRepository
 from kalens.db.availability import ClinicAvailabilityRepository
 from kalens.db.base import BaseRepository
 from kalens.db.database import get_database, get_repository
+from kalens.errors import (
+    ConflictError,
+    DomainError,
+    ErrorResponse,
+    NotAuthenticatedError,
+    NotFoundError,
+    PermissionDeniedError,
+    ServiceUnavailableError,
+    error_responses,
+    register_error_handlers,
+)
 from kalens.integration import (
     AppointmentsIntegration,
     get_integration,
@@ -86,7 +97,7 @@ from kalens.models.availability import (
     Weekday,
     WeeklySchedule,
 )
-from kalens.models.core import CoreModel, DateTimeModelMixin, IDModelMixin
+from kalens.models.core import CoreModel, DateTimeModelMixin, IDModelMixin, InputModel
 from kalens.settings import Settings
 
 __version__ = "0.1.0"
@@ -175,5 +186,16 @@ __all__ = [
     "CoreModel",
     "DateTimeModelMixin",
     "IDModelMixin",
+    "InputModel",
+    # domain errors -- the host calls register_error_handlers(app)
+    "DomainError",
+    "NotAuthenticatedError",
+    "NotFoundError",
+    "PermissionDeniedError",
+    "ConflictError",
+    "ServiceUnavailableError",
+    "ErrorResponse",
+    "error_responses",
+    "register_error_handlers",
     "reset_public_rate_limits",
 ]

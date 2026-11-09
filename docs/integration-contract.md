@@ -139,6 +139,18 @@ itself. The host still owns:
   `/clinics/{clinic_id}/availability`.
 - **Authentication**, of both kinds — JWT and the publishable key.
 
+And the host does one thing in its app setup:
+
+- **Register the library's error handler**: `kalens.register_error_handlers(app)`,
+  next to its own. It maps `kalens.DomainError` and its subclasses
+  (`NotFoundError` 404, `PermissionDeniedError` 403, `ConflictError` 409,
+  `NotAuthenticatedError` 401, `ServiceUnavailableError` 503, anything else
+  400) to the same `{"detail": ...}` body `HTTPException` gives. Nothing in
+  the library raises these yet, so a host that hasn't registered it sees no
+  difference today; it will once routes move off `HTTPException`. The
+  library's hierarchy is its own, separate from the host's, so the two
+  handlers never overlap. See `src/kalens/errors.py`.
+
 ---
 
 ## If your host has evaluations
