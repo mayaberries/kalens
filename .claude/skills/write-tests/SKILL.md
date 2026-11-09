@@ -55,7 +55,7 @@ shared rows between tests, no live server.
   rolls it back when the lifespan exits. Each test enters the lifespan once
   (`initialized_app`), so each test starts clean. Sinapsis
   (`create_database`) and Vetted (`connect_to_db`) do this; Kalens' reference
-  host doesn't yet.
+  host doesn't yet (kalens#12).
 - **Inside a test, a service's `db.transaction()` becomes a savepoint**, so
   "a failing step rolls back the earlier ones" is testable here: force the
   later step to fail, then assert the earlier rows aren't there.
@@ -203,7 +203,7 @@ Each suite has, and new repos start with:
   (kalens' rate-limit storage);
 - **CI** running the whole suite on every pull request, with PostgreSQL as a
   service container on the repo's port (Vetted 5432, Kalens 5433, Xolo 5434).
-  Kalens doesn't have CI yet.
+  Kalens doesn't have CI yet (kalens#12).
 
 Vetted's and Kalens' current `pytest.ini`s use `asyncio_mode = strict` and no
 strict markers; move them to this baseline in a change of its own, since
